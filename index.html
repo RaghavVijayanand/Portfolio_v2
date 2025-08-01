@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raghav Vijayanand - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-ring" id="cursor-ring"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader__robot">
+            <div class="robot__head"></div>
+            <div class="robot__body"></div>
+            <div class="robot__arm robot__arm--left"></div>
+            <div class="robot__arm robot__arm--right"></div>
+            <div class="robot__leg robot__leg--left"></div>
+            <div class="robot__leg robot__leg--right"></div>
+        </div>
+        <div class="loader__text">Initializing...</div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-content" id="main-content">
+        <!-- Animated Background -->
+        <div class="bg-animation">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav" id="nav">
+            <div class="nav__container">
+                <div class="nav__logo">
+                    <a href="#home">Raghav Vijayanand</a>
+                </div>
+                <div class="nav__menu" id="nav-menu">
+                    <a href="#home" class="nav__link active">Home</a>
+                    <a href="#about" class="nav__link">About</a>
+                    <a href="#education" class="nav__link">Education</a>
+                    <a href="#experience" class="nav__link">Experience</a>
+                    <a href="#skills" class="nav__link">Skills</a>
+                    <a href="#projects" class="nav__link">Projects</a>
+                    <a href="#certifications" class="nav__link">Certifications</a>
+                    <a href="#blogs" class="nav__link">Blogs</a>
+                    <a href="#music" class="nav__link">Music</a>
+                    <a href="#contact" class="nav__link">Contact</a>
+                </div>
+                <div class="nav__actions">
+                    <a href="game.html" class="btn btn--game">🏎️ Game Mode</a>
+                    <div class="nav__toggle" id="nav-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <h1 class="hero__title">Raghav Vijayanand</h1>
+                    <p class="hero__subtitle">Software Engineer | Robotics & Machine Learning Specialist</p>
+                    <p class="hero__description">
+                        Software Engineer with a focus on robotics and machine learning. Experienced in developing intelligent systems, automation pipelines, and applied AI solutions using Python and modern frameworks. Passionate about solving real-world problems through data-driven robotics and scalable ML models.
+                    </p>
+                    <div class="hero__buttons">
+                        <a href="#contact" class="btn btn--primary hero__btn btn--liquid">Get In Touch</a>
+                        <a href="#projects" class="btn btn--outline hero__btn">View Work</a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero__scroll">
+                <span>Scroll to explore</span>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about section" id="about">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">About Me</h2>
+                <div class="about__content">
+                    <div class="about__info">
+                        <p class="about__text">
+                            Software Engineer with a focus on robotics and machine learning. Experienced in developing intelligent systems, automation pipelines, and applied AI solutions using Python and modern frameworks.
+                        </p>
+                        <p class="about__text">
+                            Passionate about solving real-world problems through data-driven robotics and scalable ML models. My research spans across few-shot learning, computer vision, prosody analysis, and real-time systems.
+                        </p>
+                        <p class="about__music">
+                            Beyond technology, I'm passionate about music creation and have completed 2 levels in Trinity Drums and 3 levels in Trinity Music Theory. I'm also part of two World Records and have conducted a G20 event at college.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="education section" id="education">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Education</h2>
+                <div class="education__timeline">
+                    <div class="education__item card-tilt">
+                        <div class="education__degree">BTech CSE (IoT)</div>
+                        <div class="education__institution">Shiv Nadar University Chennai</div>
+                        <div class="education__grade">CGPA: 8.30/10</div>
+                        <div class="education__type">Bachelor's Degree</div>
+                    </div>
+                    <div class="education__item card-tilt">
+                        <div class="education__degree">12th Grade</div>
+                        <div class="education__institution">National Public School International Chennai</div>
+                        <div class="education__grade">Percentage: 80%</div>
+                        <div class="education__type">Higher Secondary</div>
+                    </div>
+                    <div class="education__item card-tilt">
+                        <div class="education__degree">10th Grade (ICSE)</div>
+                        <div class="education__institution">Secondary Education</div>
+                        <div class="education__grade">Percentage: 94%</div>
+                        <div class="education__type">Secondary School</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section class="experience section" id="experience">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Work Experience</h2>
+                <div class="experience__timeline">
+                    <div class="timeline__item">
+                        <div class="timeline__date">May 2025 - July 2025</div>
+                        <div class="timeline__content">
+                            <h3>SDE and Machine Learning Intern</h3>
+                            <h4>Meister-Gen Technologies</h4>
+                            <p>Built real-time video calling systems using Mediasoup, focusing on low-latency media handling and scalable architecture. Developed a machine learning pipeline to convert 2D building images into 3D models and integrated Three.js for interactive web-based walkthroughs.</p>
+                        </div>
+                    </div>
+                    <div class="timeline__item">
+                        <div class="timeline__date">September 2024 - March 2025</div>
+                        <div class="timeline__content">
+                            <h3>Research Internship</h3>
+                            <h4>Indian Institute of Technology, Mandi</h4>
+                            <p>Developed a lightweight image compression method by extracting and encoding MSB bitplanes, enabling efficient reconstruction with minimal quality loss.</p>
+                        </div>
+                    </div>
+                    <div class="timeline__item">
+                        <div class="timeline__date">December 2024 - January 2025</div>
+                        <div class="timeline__content">
+                            <h3>Research Internship</h3>
+                            <h4>Shiv Nadar University, Chennai</h4>
+                            <p>Designed a prosody similarity evaluation system using acoustic features (pitch, energy, rhythm) for objective comparison in speech synthesis and speaker imitation.</p>
+                        </div>
+                    </div>
+                    <div class="timeline__item">
+                        <div class="timeline__date">May 2024 - July 2024</div>
+                        <div class="timeline__content">
+                            <h3>Research Internship</h3>
+                            <h4>National Institute of Technology, Trichy</h4>
+                            <p>Built a few-shot object detection system for autonomous vehicles by integrating Faster R-CNN with Prototypical Networks, achieving 86.25% accuracy with just 40 samples/class and enabling real-time adaptation to novel objects.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="skills section" id="skills">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Technical Skills</h2>
+                <div class="skills__categories">
+                    <div class="skill__category card-tilt">
+                        <h3 class="skill__title">Robotics</h3>
+                        <div class="skill__items">
+                            <span class="skill__item">Arduino</span>
+                            <span class="skill__item">Raspberry Pi</span>
+                            <span class="skill__item">ROS noetic</span>
+                        </div>
+                    </div>
+                    <div class="skill__category card-tilt">
+                        <h3 class="skill__title">AI & Machine Learning</h3>
+                        <div class="skill__items">
+                            <span class="skill__item">Machine Learning</span>
+                            <span class="skill__item">Deep Learning</span>
+                            <span class="skill__item">Meta Learning</span>
+                        </div>
+                    </div>
+                    <div class="skill__category card-tilt">
+                        <h3 class="skill__title">Programming Languages</h3>
+                        <div class="skill__items">
+                            <span class="skill__item">Python</span>
+                            <span class="skill__item">Java</span>
+                            <span class="skill__item">C</span>
+                        </div>
+                    </div>
+                    <div class="skill__category card-tilt">
+                        <h3 class="skill__title">Full Stack Development</h3>
+                        <div class="skill__items">
+                            <span class="skill__item">HTML</span>
+                            <span class="skill__item">CSS</span>
+                            <span class="skill__item">Javascript</span>
+                            <span class="skill__item">React JS</span>
+                            <span class="skill__item">Flask</span>
+                            <span class="skill__item">PHP</span>
+                            <span class="skill__item">Selenium</span>
+                            <span class="skill__item">Node JS</span>
+                        </div>
+                    </div>
+                    <div class="skill__category card-tilt">
+                        <h3 class="skill__title">Database Management</h3>
+                        <div class="skill__items">
+                            <span class="skill__item">SQL</span>
+                            <span class="skill__item">PL/SQL</span>
+                            <span class="skill__item">Firebase</span>
+                            <span class="skill__item">SQLite3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="projects section" id="projects">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">All Projects</h2>
+                <div class="projects__grid">
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Automated parking system with self parking cars</h3>
+                        <p>Intelligent parking system with autonomous vehicle navigation and self-parking capabilities</p>
+                        <div class="project__tech">
+                            <span>Python</span>
+                            <span>Computer Vision</span>
+                            <span>Robotics</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Ultrasonic automatic speed breaker</h3>
+                        <p>Smart speed control system using ultrasonic sensors for traffic management</p>
+                        <div class="project__tech">
+                            <span>Arduino</span>
+                            <span>Sensors</span>
+                            <span>IoT</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Wi-Fi Controlled car with ADAS and parking assist</h3>
+                        <p>Remote-controlled vehicle with Advanced Driver Assistance Systems and parking features</p>
+                        <div class="project__tech">
+                            <span>Arduino</span>
+                            <span>Wi-Fi</span>
+                            <span>ADAS</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Secure, Full-System AI Assistant with Voice and NLP Interface for windows</h3>
+                        <p>Comprehensive AI assistant with secure voice recognition and natural language processing</p>
+                        <div class="project__tech">
+                            <span>Python</span>
+                            <span>NLP</span>
+                            <span>Voice Recognition</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Integrating TOR Browser and Lightweight Linux on a 120MB Smart Watch</h3>
+                        <p>Privacy-focused smartwatch implementation with TOR browser and Linux distribution</p>
+                        <div class="project__tech">
+                            <span>Linux</span>
+                            <span>TOR</span>
+                            <span>Embedded Systems</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type ongoing">Ongoing</div>
+                        <h3>Cognitive Vision Modeling in Machine Learning</h3>
+                        <p>Advanced computer vision research project focusing on cognitive processing models</p>
+                        <div class="project__tech">
+                            <span>Machine Learning</span>
+                            <span>Computer Vision</span>
+                            <span>Research</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Decentralized Voting system using Ethereum</h3>
+                        <p>Blockchain-based voting system ensuring transparency and security using Ethereum</p>
+                        <div class="project__tech">
+                            <span>Ethereum</span>
+                            <span>Blockchain</span>
+                            <span>Smart Contracts</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Cursor movement using iris tracking</h3>
+                        <p>Eye-tracking system for hands-free computer interaction using iris movement detection</p>
+                        <div class="project__tech">
+                            <span>Computer Vision</span>
+                            <span>OpenCV</span>
+                            <span>Eye Tracking</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Monocular depth estimation</h3>
+                        <p>Single-camera depth perception system using machine learning techniques</p>
+                        <div class="project__tech">
+                            <span>Deep Learning</span>
+                            <span>Computer Vision</span>
+                            <span>Python</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Real-Time Camera-Based Robotic Hand Mimicry</h3>
+                        <p>Robotic hand system that mimics human hand movements in real-time using camera input</p>
+                        <div class="project__tech">
+                            <span>Robotics</span>
+                            <span>Computer Vision</span>
+                            <span>Real-time Processing</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Text-to-Speech Synthesis with Tacotron</h3>
+                        <p>Advanced speech synthesis system using Tacotron architecture for natural voice generation</p>
+                        <div class="project__tech">
+                            <span>Deep Learning</span>
+                            <span>NLP</span>
+                            <span>Speech Synthesis</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type completed">Completed</div>
+                        <h3>Few-Shot Learning for Raga Segmentation and Classification in Indian Classical Music</h3>
+                        <p>Machine learning system for automatic classification and segmentation of Indian classical music ragas</p>
+                        <div class="project__tech">
+                            <span>Few-Shot Learning</span>
+                            <span>Audio Processing</span>
+                            <span>Music Analysis</span>
+                        </div>
+                    </div>
+                    <div class="project__card card-tilt">
+                        <div class="project__type ongoing">Ongoing</div>
+                        <h3>Neurocognitive Analysis of Carnatic Ragas through Music-EEG Correlation</h3>
+                        <p>Research project analyzing brain responses to Carnatic music using EEG data correlation</p>
+                        <div class="project__tech">
+                            <span>EEG Analysis</span>
+                            <span>Neuroscience</span>
+                            <span>Music Analysis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications & Achievements Section -->
+        <section class="certifications section" id="certifications">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Certifications & Achievements</h2>
+                <div class="cert-achieve__content">
+                    <div class="achievements__highlight">
+                        <h3>Key Achievements</h3>
+                        <ul class="achievements__list">
+                            <li>Part of two World Records</li>
+                            <li>Finished 2 levels in Trinity Drums</li>
+                            <li>Finished 3 levels in Trinity Music Theory</li>
+                            <li>Conducted a G20 event at college</li>
+                            <li>Served as a class representative</li>
+                            <li>Held and organised seminars at college</li>
+                        </ul>
+                    </div>
+                    <div class="certifications__list">
+                        <h3>Professional Certifications</h3>
+                        <div class="cert__grid">
+                            <div class="cert__item">NPTEL: Cloud computing; Intro To Industry 4.0</div>
+                            <div class="cert__item">Udemy: Blockchain 101; ROS, AI & Machine Learning Bootcamp</div>
+                            <div class="cert__item">GUVI: Step into robotic process automation</div>
+                            <div class="cert__item">NXTWave: AI for Students: Build your own Generative AI Model</div>
+                            <div class="cert__item">Hacker Rank: Frontend Developer (React), Java, Software developer Intern</div>
+                            <div class="cert__item">Infosys Springboard: Introduction to Business Intelligence, IoT Edge Computing</div>
+                            <div class="cert__item">AWS: Amazon Kinesis, DynamoDB, Foundations of prompt engineering</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blogs Section -->
+        <section class="blogs section" id="blogs">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Featured Blogs</h2>
+                <p class="blogs__description">
+                    Sharing insights and tutorials on technology, AI, and innovative projects through Medium articles.
+                </p>
+                <div class="blogs__grid">
+                    <article class="blog__card card-tilt">
+                        <div class="blog__header">
+                            <h3>Fitting Tor, a Browser, and Linux Into a 120 MB Smart Watch</h3>
+                            <p class="blog__summary">Guide to transforming a smartwatch into a privacy powerhouse.</p>
+                        </div>
+                        <div class="blog__meta">
+                            <span class="blog__platform">Medium</span>
+                            <a href="https://medium.com/@raghav.vijayanand/fitting-tor-a-browser-and-linux-into-a-120-mb-smart-watch-a-guide-to-enhanced-anonymity-and-916b49f699b8" target="_blank" class="blog__link btn btn--outline btn--sm">Read Article</a>
+                        </div>
+                    </article>
+                    
+                    <article class="blog__card card-tilt">
+                        <div class="blog__header">
+                            <h3>Unleash Your Inner Artist: AR-Powered Drawing Python App</h3>
+                            <p class="blog__summary">Turn your webcam into a magical AR canvas.</p>
+                        </div>
+                        <div class="blog__meta">
+                            <span class="blog__platform">Medium</span>
+                            <a href="https://medium.com/@raghav.vijayanand/unleash-your-inner-artist-dive-into-ar-powered-drawing-with-this-mind-blowing-python-app-b65e89d23e11" target="_blank" class="blog__link btn btn--outline btn--sm">Read Article</a>
+                        </div>
+                    </article>
+                    
+                    <article class="blog__card card-tilt">
+                        <div class="blog__header">
+                            <h3>Revolutionizing Parking with ParkMate</h3>
+                            <p class="blog__summary">Smart real-time parking management system.</p>
+                        </div>
+                        <div class="blog__meta">
+                            <span class="blog__platform">Medium</span>
+                            <a href="https://medium.com/@raghav.vijayanand/revolutionizing-parking-with-parkmate-an-intelligent-management-system-754a45fc41be" target="_blank" class="blog__link btn btn--outline btn--sm">Read Article</a>
+                        </div>
+                    </article>
+                    
+                    <article class="blog__card card-tilt">
+                        <div class="blog__header">
+                            <h3>Ultimate Guide to Building Your Own JARVIS AI Assistant</h3>
+                            <p class="blog__summary">Step-by-step to create a Python-powered voice AI.</p>
+                        </div>
+                        <div class="blog__meta">
+                            <span class="blog__platform">Medium</span>
+                            <a href="https://medium.com/@raghav.vijayanand/ultimate-guide-to-building-your-own-jarvis-ai-voice-assistant-in-python-5743409ff583" target="_blank" class="blog__link btn btn--outline btn--sm">Read Article</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Music Section -->
+        <section class="music section" id="music">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Music & Creativity</h2>
+                <p class="music__description">
+                    Explore my musical journey through original compositions and creative projects. 
+                    Music fuels my creativity and enhances my problem-solving approach in technology.
+                </p>
+                
+                <div class="music__grid">
+                    <div class="music__video" data-video-id="OYxLPQ5S_Mk">
+                        <div class="video__thumbnail">
+                            <img src="https://img.youtube.com/vi/OYxLPQ5S_Mk/maxresdefault.jpg" alt="Shatter the Sky">
+                            <div class="video__play">▶</div>
+                        </div>
+                        <h3>Shatter the Sky</h3>
+                        <p>Original composition with electronic elements</p>
+                    </div>
+                    
+                    <div class="music__video" data-video-id="R1m0wTBCGVM">
+                        <div class="video__thumbnail">
+                            <img src="https://img.youtube.com/vi/R1m0wTBCGVM/maxresdefault.jpg" alt="Megatroniz-Camellia">
+                            <div class="video__play">▶</div>
+                        </div>
+                        <h3>Megatroniz-Camellia</h3>
+                        <p>Electronic fusion composition</p>
+                    </div>
+                    
+                    <div class="music__video" data-video-id="1wL23zNkMcw">
+                        <div class="video__thumbnail">
+                            <img src="https://img.youtube.com/vi/1wL23zNkMcw/maxresdefault.jpg" alt="Megatroniz-Rusted Dreams">
+                            <div class="video__play">▶</div>
+                        </div>
+                        <h3>Megatroniz-Rusted Dreams</h3>
+                        <p>Ambient soundscape with rhythmic elements</p>
+                    </div>
+                    
+                    <div class="music__video" data-video-id="pOCFWVMCsXQ">
+                        <div class="video__thumbnail">
+                            <img src="https://img.youtube.com/vi/pOCFWVMCsXQ/maxresdefault.jpg" alt="Megatroniz-Ecstacy">
+                            <div class="video__play">▶</div>
+                        </div>
+                        <h3>Megatroniz-Ecstacy</h3>
+                        <p>Energetic composition with complex rhythms</p>
+                    </div>
+                </div>
+                
+                <!-- Audio Visualizer Modal -->
+                <div class="visualizer-modal hidden" id="visualizer-modal">
+                    <div class="modal__backdrop"></div>
+                    <div class="modal__content">
+                        <button class="modal__close" id="modal-close">&times;</button>
+                        <div class="video__container">
+                            <div id="youtube-player"></div>
+                        </div>
+                        <div class="visualizer__container">
+                            <canvas id="visualizer-canvas" width="800" height="200"></canvas>
+                            <div class="visualizer__controls">
+                                <button id="visualizer-toggle" class="btn btn--primary btn--sm">Start Visualizer</button>
+                                <span class="visualizer__info">Click to enable audio visualization</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact section" id="contact">
+            <div class="container">
+                <h2 class="section__title section__title--wipe">Get In Touch</h2>
+                <div class="contact__content">
+                    <div class="contact__info">
+                        <p class="contact__text">
+                            I'm always interested in discussing new opportunities, research collaborations, or innovative projects. Let's connect and explore how we can work together.
+                        </p>
+                        <div class="contact__details">
+                            <div class="contact__item">
+                                <span class="contact__label">Email:</span>
+                                <a href="mailto:raghav.vijayanand@gmail.com">raghav.vijayanand@gmail.com</a>
+                            </div>
+                            <div class="contact__item">
+                                <span class="contact__label">Phone:</span>
+                                <a href="tel:+919566131050">+91 9566131050</a>
+                            </div>
+                            <div class="contact__item">
+                                <span class="contact__label">Website:</span>
+                                <a href="http://www.energme.com" target="_blank">www.energme.com</a>
+                            </div>
+                        </div>
+                        <div class="social__links">
+                            <a href="https://github.com/RaghavVijayanand" target="_blank" class="social__link">GitHub</a>
+                            <a href="https://www.linkedin.com/in/raghav-vijayanand" target="_blank" class="social__link">LinkedIn</a>
+                            <a href="https://www.youtube.com/@megatroniz2004" target="_blank" class="social__link">YouTube</a>
+                            <a href="https://medium.com/@raghav.vijayanand" target="_blank" class="social__link">Medium</a>
+                        </div>
+                    </div>
+                    <form class="contact__form" id="contact-form">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" id="subject" name="subject" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width btn--liquid">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    <!-- Game Mode removed - now uses separate page (game.html) -->
+
+    <div class="main-content-footer">
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 Raghav Vijayanand. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- Retro Theme Overlay (Easter Egg) -->
+        <div class="retro-overlay hidden" id="retro-overlay">
+            <div class="retro-scanlines"></div>
+            <div class="retro-border"></div>
+        </div>
+    </div> <!-- end of main-content-footer -->
+    </div> <!-- end of main-content -->
+
+    <!-- YouTube API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="app.js"></script>
+</body>
+</html>
