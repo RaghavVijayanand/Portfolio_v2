@@ -63,6 +63,13 @@ class PortfolioGame3D {
         this.currentBuilding = null;
         this.isResumeViewOpen = false;
         this.resumeModal = null;
+        this.isTouchDevice = this.shouldUseTouchControls();
+        this.touchInput = {
+            accelerate: false,
+            reverse: false,
+            left: false,
+            right: false
+        };
         // Portfolio sections as 3D buildings - positioned safely away from roads
         this.portfolioSections = [
             {
@@ -330,6 +337,8 @@ class PortfolioGame3D {
             
             this.setupEventListeners();
             console.log('✅ Event listeners setup');
+            this.setupTouchControls();
+            console.log('✅ Touch controls configured');
             
             // Initial camera position
             this.camera.position.set(0, 15, 20);
@@ -1759,6 +1768,108 @@ class PortfolioGame3D {
             modalClose.addEventListener('click', () => this.closeModal());
         }
     }
+
+    setupTouchControls() {
+        const mobileControls = document.getElementById('mobile-controls');
+        if (!mobileControls) {
+            this.isTouchDevice = false;
+            return;
+        }
+
+        this.mobileControlsElement = mobileControls;
+
+        const updateVisibility = () => {
+            const shouldShow = this.shouldUseTouchControls();
+            this.isTouchDevice = shouldShow;
+            mobileControls.classList.toggle('hidden', !shouldShow);
+            mobileControls.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        };
+
+        updateVisibility();
+        window.addEventListener('resize', updateVisibility);
+        window.addEventListener('orientationchange', updateVisibility);
+
+        this.bindTouchHold('touch-left', 'left');
+        this.bindTouchHold('touch-right', 'right');
+        this.bindTouchHold('touch-accelerate', 'accelerate');
+        this.bindTouchHold('touch-reverse', 'reverse');
+        this.bindTouchTap('touch-interact', () => this.handleTouchInteract());
+    }
+
+    bindTouchHold(elementId, actionKey) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const setActive = (isActive, event) => {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            this.touchInput[actionKey] = isActive;
+            element.classList.toggle('active', isActive);
+        };
+
+        element.addEventListener('pointerdown', (event) => {
+            setActive(true, event);
+            element.setPointerCapture?.(event.pointerId);
+        });
+
+        const clearActive = (event) => {
+            setActive(false, event);
+            element.releasePointerCapture?.(event.pointerId);
+        };
+
+        element.addEventListener('pointerup', clearActive);
+        element.addEventListener('pointercancel', clearActive);
+        element.addEventListener('pointerleave', clearActive);
+    }
+
+    bindTouchTap(elementId, handler) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const handlePointerUp = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handler();
+        };
+
+        element.addEventListener('pointerdown', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        element.addEventListener('pointerup', handlePointerUp);
+        element.addEventListener('pointercancel', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        element.addEventListener('click', (event) => {
+            event.preventDefault();
+            handler();
+        });
+    }
+
+    handleTouchInteract() {
+        if (this.isResumeViewOpen) {
+            this.closeResumeView();
+            return;
+        }
+
+        if (this.isInInteractiveZone && this.currentBuilding) {
+            this.openResumeView();
+        }
+    }
+
+    shouldUseTouchControls() {
+        if (typeof window === 'undefined') {
+            return false;
+        }
+
+        const hasTouchSupport = 'ontouchstart' in window;
+        const coarsePointer = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+        const navigatorHasTouch = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+        return hasTouchSupport || navigatorHasTouch || coarsePointer || window.innerWidth <= 900;
+    }
     
     handleKeyDown(e) {
         // Handle resume modal keys first (global handling)
@@ -1798,6 +1909,17 @@ class PortfolioGame3D {
 
     resetInputState() {
         this.keys = {};
+        if (this.touchInput) {
+            Object.keys(this.touchInput).forEach(key => {
+                this.touchInput[key] = false;
+            });
+        }
+
+        if (this.mobileControlsElement) {
+            this.mobileControlsElement.querySelectorAll('.control-button.active').forEach(button => {
+                button.classList.remove('active');
+            });
+        }
     }
     
     gameLoop() {
@@ -1853,6 +1975,22 @@ class PortfolioGame3D {
         if (this.keys['ArrowRight'] || this.keys['KeyD']) steerInput = -1;
         if (this.keys['ArrowUp'] || this.keys['KeyW']) throttleInput = 1;
         if (this.keys['ArrowDown'] || this.keys['KeyS']) reverseInput = 1;
+
+        if (this.touchInput) {
+            if (this.touchInput.left && !this.touchInput.right) {
+                steerInput = 1;
+            } else if (this.touchInput.right) {
+                steerInput = -1;
+            }
+
+            if (this.touchInput.accelerate) {
+                throttleInput = 1;
+            }
+
+            if (this.touchInput.reverse) {
+                reverseInput = 1;
+            }
+        }
         
         // Calculate forces with enhanced acceleration
         const speedFactor = 1 - (Math.abs(this.carPhysics.speed) / this.carPhysics.maxSpeed);
@@ -2140,6 +2278,7 @@ class PortfolioGame3D {
         if (modal) {
             modal.classList.add('hidden');
             this.isResumeViewOpen = false;
+            this.resetInputState();
             this.gameActive = true;
         }
     }
