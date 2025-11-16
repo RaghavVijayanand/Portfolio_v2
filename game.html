@@ -21,6 +21,12 @@
                 --text-primary: #f8fafc;
                 --text-muted: #94a3b8;
                 --border-glow: 0 0 35px rgba(56, 189, 248, 0.35);
+                --app-height: 100vh;
+            }
+
+            html, body {
+                height: 100%;
+                width: 100%;
             }
 
             body {
@@ -30,6 +36,8 @@
                 overflow: hidden;
                 cursor: none;
                 touch-action: manipulation;
+                min-height: var(--app-height);
+                height: var(--app-height);
             }
 
             .game-container {
@@ -37,7 +45,8 @@
                 top: 0;
                 left: 0;
                 width: 100vw;
-                height: 100vh;
+                min-height: var(--app-height);
+                height: var(--app-height);
                 background: linear-gradient(170deg, rgba(13, 20, 37, 0.95) 0%, rgba(6, 11, 24, 0.98) 55%, rgba(3, 6, 15, 1) 100%);
                 overflow: hidden;
             }
@@ -444,6 +453,7 @@
                 color: var(--text-primary);
                 padding: 20px;
                 text-align: center;
+                position: relative;
             }
 
             .resume-title {
@@ -460,6 +470,35 @@
             .resume-header .key-hint kbd {
                 background: var(--text-primary);
                 color: #051121;
+            }
+
+            .resume-close-button {
+                position: absolute;
+                top: 12px;
+                right: 16px;
+                background: rgba(5, 17, 33, 0.35);
+                border: 1px solid rgba(248, 250, 252, 0.4);
+                border-radius: 50%;
+                color: var(--text-primary);
+                width: 36px;
+                height: 36px;
+                font-size: 1.2rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .resume-close-button:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 18px rgba(248, 250, 252, 0.35);
+            }
+
+            @supports (height: 100dvh) {
+                body,
+                .game-container {
+                    min-height: 100dvh;
+                    height: 100dvh;
+                }
             }
 
             .resume-body {
@@ -599,10 +638,10 @@
             <div class="instruction-item desktop-only">🎯 A/← - Turn Left | D/→ - Turn Right</div>
             <div class="instruction-item desktop-only">🔓 E - Interact with portfolio buildings</div>
             <div class="instruction-item">📍 Neon boards near each entrance show which portfolio section you're visiting</div>
-            <div class="instruction-item">↩️ Shift + Esc - Return to the main portfolio</div>
+            <div class="instruction-item desktop-only">↩️ Shift + Esc - Return to the main portfolio</div>
             <div class="instruction-item">🌆 Explore Raghav's robotics & ML city showcase</div>
             <div class="instruction-item mobile-only">📱 Tap the GO/REV pedals and arrow pads to drive on mobile</div>
-            <div class="instruction-item mobile-only">🟡 Tap the INTERACT button near glowing entrances to open a section</div>
+            <div class="instruction-item mobile-only">🟡 Tap the INTERACT or CLOSE buttons near glowing entrances to open/exit a section</div>
         </div>
 
         <!-- Mobile Touch Controls -->
@@ -626,7 +665,8 @@
                 <h3 id="prompt-title">Building Name</h3>
                 <p id="prompt-description">Building description</p>
                 <div class="prompt-controls">
-                    <span class="key-hint">Press <kbd>E</kbd> to view resume section</span>
+                    <span class="key-hint" data-ui-mode="desktop">Press <kbd>E</kbd> to view this section</span>
+                    <span class="key-hint" data-ui-mode="mobile">Tap the <strong>INTERACT</strong> button to open this section</span>
                 </div>
             </div>
         </div>
@@ -649,8 +689,10 @@
             <div class="resume-header">
                 <h2 id="resume-title" class="resume-title">Resume Section</h2>
                 <div class="resume-controls">
-                    <span class="key-hint">Press <kbd>Q</kbd> or <kbd>ESC</kbd> to close • <kbd>Shift</kbd> + <kbd>ESC</kbd> returns to main site</span>
+                    <span class="key-hint" data-ui-mode="desktop">Press <kbd>Q</kbd> or <kbd>ESC</kbd> to close • <kbd>Shift</kbd> + <kbd>ESC</kbd> returns to main site</span>
+                    <span class="key-hint" data-ui-mode="mobile">Tap <strong>CLOSE</strong> or the purple INTERACT button to exit this section</span>
                 </div>
+                <button id="resume-close-button" class="resume-close-button" type="button" aria-label="Close resume view">×</button>
             </div>
             <div id="resume-body" class="resume-body">
                 Content will be loaded here...
@@ -658,6 +700,22 @@
         </div>
     </div>
 
+    <script>
+        (function() {
+            const updateAppHeight = () => {
+                const viewport = window.visualViewport;
+                const height = viewport ? viewport.height : window.innerHeight;
+                document.documentElement.style.setProperty('--app-height', `${height}px`);
+            };
+
+            updateAppHeight();
+            const resizeEvents = ['resize', 'orientationchange'];
+            resizeEvents.forEach(evt => window.addEventListener(evt, () => setTimeout(updateAppHeight, 50)));
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', updateAppHeight);
+            }
+        })();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="game3d.js"></script>
 </body>

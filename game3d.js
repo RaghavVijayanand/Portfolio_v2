@@ -378,10 +378,12 @@ class PortfolioGame3D {
         
         console.log('✅ Scene created');
         
+        const viewportSize = this.getViewportSize();
+
         // Main Camera
         this.camera = new THREE.PerspectiveCamera(
             75, 
-            window.innerWidth / window.innerHeight, 
+            viewportSize.width / viewportSize.height, 
             0.1, 
             1000
         );
@@ -403,10 +405,10 @@ class PortfolioGame3D {
             this.renderer = new THREE.CanvasRenderer();
         }
         
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(viewportSize.width, viewportSize.height);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         this.renderer.setClearColor(0x87CEEB, 1);  // Set clear color
         
         container.appendChild(this.renderer.domElement);
@@ -428,6 +430,24 @@ class PortfolioGame3D {
         
         // Handle window resize
         window.addEventListener('resize', () => this.onWindowResize());
+    }
+
+    getViewportSize() {
+        const container = document.getElementById('game-viewport');
+        if (!container) {
+            return {
+                width: window.innerWidth || 1,
+                height: window.innerHeight || 1
+            };
+        }
+
+        const rect = container.getBoundingClientRect();
+        const width = rect.width || container.clientWidth || window.innerWidth || 1;
+        const height = rect.height || container.clientHeight || window.innerHeight || 1;
+        return {
+            width: Math.max(1, Math.round(width)),
+            height: Math.max(1, Math.round(height))
+        };
     }
     
     createSky() {
@@ -545,9 +565,12 @@ class PortfolioGame3D {
     }
     
     onWindowResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        const viewportSize = this.getViewportSize();
+        this.camera.aspect = viewportSize.width / viewportSize.height;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if (this.renderer) {
+            this.renderer.setSize(viewportSize.width, viewportSize.height);
+        }
         
         // Keep minimap in top-right corner
         const container = document.getElementById('game-viewport');
@@ -1767,12 +1790,18 @@ class PortfolioGame3D {
         if (modalClose) {
             modalClose.addEventListener('click', () => this.closeModal());
         }
+
+        const resumeCloseButton = document.getElementById('resume-close-button');
+        if (resumeCloseButton) {
+            resumeCloseButton.addEventListener('click', () => this.closeResumeView());
+        }
     }
 
     setupTouchControls() {
         const mobileControls = document.getElementById('mobile-controls');
         if (!mobileControls) {
             this.isTouchDevice = false;
+            this.updateTouchHintVisibility();
             return;
         }
 
@@ -1783,6 +1812,7 @@ class PortfolioGame3D {
             this.isTouchDevice = shouldShow;
             mobileControls.classList.toggle('hidden', !shouldShow);
             mobileControls.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+            this.updateTouchHintVisibility();
         };
 
         updateVisibility();
@@ -1794,6 +1824,8 @@ class PortfolioGame3D {
         this.bindTouchHold('touch-accelerate', 'accelerate');
         this.bindTouchHold('touch-reverse', 'reverse');
         this.bindTouchTap('touch-interact', () => this.handleTouchInteract());
+
+        this.updateTouchHintVisibility();
     }
 
     bindTouchHold(elementId, actionKey) {
@@ -1858,6 +1890,20 @@ class PortfolioGame3D {
         if (this.isInInteractiveZone && this.currentBuilding) {
             this.openResumeView();
         }
+    }
+
+    updateTouchHintVisibility() {
+        const showMobile = !!this.isTouchDevice;
+        const desktopHints = document.querySelectorAll('[data-ui-mode="desktop"]');
+        const mobileHints = document.querySelectorAll('[data-ui-mode="mobile"]');
+
+        desktopHints.forEach(element => {
+            element.hidden = showMobile;
+        });
+
+        mobileHints.forEach(element => {
+            element.hidden = !showMobile;
+        });
     }
 
     shouldUseTouchControls() {
