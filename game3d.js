@@ -9,11 +9,6 @@ class PortfolioGame3D {
         // Three.js core objects
         this.scene = null;
         this.camera = null;
-        this.renderer = null;
-        this.controls = null;
-        
-        // Minimap system
-        this.minimapCamera = null;
         this.minimapRenderer = null;
         this.minimapSize = 200;
         
@@ -24,6 +19,9 @@ class PortfolioGame3D {
         this.trees = [];
         this.roads = [];
         this.particles = [];
+    this.buildingLabels = [];
+    this.sectionGuideLabels = [];
+    this.sectionGuideHalos = [];
         
         this.gameActive = false;
         this.animationId = null;
@@ -45,6 +43,14 @@ class PortfolioGame3D {
         
         // World properties
         this.worldSize = { width: 200, height: 200 };
+
+        // Environment height tuning to keep roads above terrain undulations
+        this.environmentHeights = {
+            groundVariation: 0.08,
+            roadElevation: 0.18,
+            markingElevation: 0.21,
+            crosswalkElevation: 0.23
+        };
         
         // Game state
         this.keys = {};
@@ -57,189 +63,209 @@ class PortfolioGame3D {
         this.currentBuilding = null;
         this.isResumeViewOpen = false;
         this.resumeModal = null;
-        
         // Portfolio sections as 3D buildings - positioned safely away from roads
         this.portfolioSections = [
             {
                 id: 'about',
-                title: 'About Me [P1]',
+                title: 'About Raghav',
+                label: 'ABOUT',
+                minimapLabel: 'ABOUT',
                 position: { x: -50, z: -15 }, // Moved away from roads
                 size: { width: 18, height: 25, depth: 12 }, // Increased size
-                color: 0x3498db,
-                description: 'Learn about my background, skills, and journey as a developer.',
+                color: 0x2563eb,
+                description: 'Robotics & ML engineer building intelligent systems and applied research projects.',
                 type: 'office',
                 debugCode: 'P1',
                 resumeContent: {
-                    title: 'About Me',
+                    title: 'About Raghav',
                     content: `
-                        <h2>Professional Summary</h2>
-                        <p>Passionate Full-Stack Developer with 5+ years of experience in building modern web applications. 
-                        I specialize in JavaScript, React, Node.js, and cloud technologies.</p>
-                        
-                        <h3>Background</h3>
-                        <p>Started my journey in computer science with a focus on problem-solving and creating 
-                        innovative solutions. I believe in writing clean, maintainable code and staying up-to-date 
-                        with the latest industry trends.</p>
-                        
-                        <h3>Interests</h3>
+                        <h2>Profile</h2>
+                        <p>Software Engineer focused on robotics and machine learning. I develop intelligent systems, automation pipelines, and applied AI solutions using Python and modern frameworks.</p>
+
+                        <h3>Focus Areas</h3>
                         <ul>
-                            <li>3D Graphics and WebGL</li>
-                            <li>AI and Machine Learning</li>
-                            <li>Game Development</li>
-                            <li>Open Source Contribution</li>
+                            <li>Robotics, human-in-the-loop automation, and real-time control</li>
+                            <li>Computer vision, few-shot learning, and multimodal perception</li>
+                            <li>Speech prosody analysis and audio ML for creative tooling</li>
+                            <li>Scalable backend services for ML-powered experiences</li>
+                        </ul>
+
+                        <h3>Beyond Code</h3>
+                        <ul>
+                            <li>Music producer (Megatroniz) with Trinity-certified drums and music theory</li>
+                            <li>Part of two World Records and organizer for a G20 college event</li>
+                            <li>Building <strong>Energme</strong> to explore energy-focused innovation</li>
                         </ul>
                     `
                 }
             },
             {
                 id: 'projects',
-                title: 'Projects [P2]',
+                title: 'Projects & Research',
+                label: 'PROJECTS',
+                minimapLabel: 'PROJECTS',
                 position: { x: 50, z: -15 }, // Moved away from roads
                 size: { width: 20, height: 28, depth: 15 }, // Increased size
-                color: 0xe74c3c,
-                description: 'Explore my latest projects and applications.',
-                type: 'tech',
+                color: 0xc084fc,
+                description: 'Hands-on robotics, vision, and ML projects from campus research to production prototypes.',
+                type: 'commercial',
                 debugCode: 'P2',
                 resumeContent: {
-                    title: 'Featured Projects',
+                    title: 'Highlighted Projects',
                     content: `
-                        <h2>Recent Projects</h2>
-                        
-                        <h3>🚗 3D Portfolio Racing Game</h3>
-                        <p><strong>Technologies:</strong> Three.js, WebGL, JavaScript</p>
-                        <p>Interactive 3D world for portfolio exploration with realistic physics and dynamic lighting.</p>
-                        
-                        <h3>🛍️ E-Commerce Platform</h3>
-                        <p><strong>Technologies:</strong> React, Node.js, MongoDB, Stripe</p>
-                        <p>Full-stack application with payment integration and real-time inventory management.</p>
-                        
-                        <h3>📱 Mobile Task Manager</h3>
-                        <p><strong>Technologies:</strong> React Native, Firebase, Redux</p>
-                        <p>Cross-platform mobile app with offline sync and team collaboration features.</p>
-                        
-                        <h3>🤖 AI Chat Assistant</h3>
-                        <p><strong>Technologies:</strong> Python, OpenAI API, FastAPI</p>
-                        <p>Intelligent chatbot with natural language processing and context awareness.</p>
+                        <h2>Featured Builds</h2>
+
+                        <h3>Automated Parking System with Self Parking Cars</h3>
+                        <p><strong>Focus:</strong> Autonomous navigation, vision-based docking, and fleet coordination.</p>
+                        <p><strong>Stack:</strong> Python · ROS · Computer Vision</p>
+
+                        <h3>Ultrasonic Automatic Speed Breaker</h3>
+                        <p><strong>Focus:</strong> Smart traffic management using sensor-driven actuation.</p>
+                        <p><strong>Stack:</strong> Arduino · Embedded Systems · IoT</p>
+
+                        <h3>Wi-Fi Controlled Car with ADAS & Parking Assist</h3>
+                        <p><strong>Focus:</strong> Remote vehicle control with driver assistance overlays.</p>
+                        <p><strong>Stack:</strong> Arduino · ADAS · Wireless Networking</p>
+
+                        <h3>Secure AI Assistant for Windows</h3>
+                        <p><strong>Focus:</strong> Voice-enabled assistant with on-device NLP and security layers.</p>
+                        <p><strong>Stack:</strong> Python · NLP · Speech Recognition</p>
+
+                        <h3>Additional Explorations</h3>
+                        <ul>
+                            <li>Integrating TOR Browser and lightweight Linux on a smartwatch</li>
+                            <li>Decentralized voting with Ethereum smart contracts</li>
+                            <li>Iris-tracking cursor control for accessible computing</li>
+                            <li>Cognitive vision modeling research in machine learning</li>
+                        </ul>
                     `
                 }
             },
             {
                 id: 'skills',
-                title: 'Skills [P3]',
+                title: 'Skills & Tech Stack',
+                label: 'SKILLS',
+                minimapLabel: 'SKILLS',
                 position: { x: -65, z: 15 }, // Moved further away from roads
                 size: { width: 19, height: 26, depth: 13 }, // Increased size
-                color: 0x2ecc71,
-                description: 'Discover my technical skills and expertise.',
-                type: 'school',
+                color: 0x22d3ee,
+                description: 'Key technologies powering my robotics, ML, and software projects.',
+                type: 'office',
                 debugCode: 'P3',
                 resumeContent: {
-                    title: 'Technical Skills',
+                    title: 'Technical Toolkit',
                     content: `
-                        <h2>Programming Languages</h2>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <h2>Core Domains</h2>
+                        <ul>
+                            <li><strong>Robotics:</strong> Arduino, Raspberry Pi, ROS Noetic, sensor fusion</li>
+                            <li><strong>AI & ML:</strong> Machine Learning, Deep Learning, Meta Learning, Computer Vision</li>
+                            <li><strong>Software:</strong> Python, Java, C, SQL, Flask, FastAPI</li>
+                            <li><strong>Tooling:</strong> Docker, Git, SQLite3, Firebase, TensorFlow, PyTorch</li>
+                        </ul>
+
+                        <h3>What I Work With</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
                             <div>
-                                <h4>Frontend</h4>
+                                <h4>Robotics & Embedded</h4>
                                 <ul>
-                                    <li>JavaScript (ES6+)</li>
-                                    <li>TypeScript</li>
-                                    <li>React.js</li>
-                                    <li>Vue.js</li>
-                                    <li>HTML5 & CSS3</li>
-                                    <li>Three.js & WebGL</li>
+                                    <li>Autonomous navigation</li>
+                                    <li>Sensor calibration & actuation</li>
+                                    <li>Real-time control loops</li>
                                 </ul>
                             </div>
                             <div>
-                                <h4>Backend</h4>
+                                <h4>AI Engineering</h4>
                                 <ul>
-                                    <li>Node.js</li>
-                                    <li>Python</li>
-                                    <li>Express.js</li>
-                                    <li>FastAPI</li>
-                                    <li>PostgreSQL</li>
-                                    <li>MongoDB</li>
+                                    <li>Computer vision pipelines</li>
+                                    <li>Model deployment & monitoring</li>
+                                    <li>Data processing & analytics</li>
                                 </ul>
                             </div>
                         </div>
-                        
-                        <h3>Tools & Technologies</h3>
-                        <p><strong>Cloud:</strong> AWS, Google Cloud, Docker, Kubernetes</p>
-                        <p><strong>DevOps:</strong> Git, CI/CD, Jenkins, GitHub Actions</p>
-                        <p><strong>Testing:</strong> Jest, Cypress, Selenium</p>
                     `
                 }
             },
             {
                 id: 'experience',
-                title: 'Experience [P4]',
+                title: 'Experience Timeline',
+                label: 'EXPERIENCE',
+                minimapLabel: 'EXPERIENCE',
                 position: { x: 50, z: 55 }, // Moved away from roads
                 size: { width: 22, height: 30, depth: 16 }, // Increased size
-                color: 0xf39c12,
-                description: 'My professional journey and work experience.',
+                color: 0xfbbf24,
+                description: 'Internships and research roles across robotics, ML, and computer vision.',
                 type: 'corporate',
                 debugCode: 'P4',
                 resumeContent: {
                     title: 'Work Experience',
                     content: `
                         <h2>Professional Experience</h2>
-                        
-                        <h3>Senior Full-Stack Developer</h3>
-                        <p><strong>TechCorp Solutions</strong> | 2022 - Present</p>
+
+                        <h3>Meister-Gen Technologies — SDE & Machine Learning Intern</h3>
+                        <p><strong>May 2025 – Jul 2025</strong></p>
                         <ul>
-                            <li>Led development of microservices architecture serving 100K+ users</li>
-                            <li>Implemented CI/CD pipelines reducing deployment time by 60%</li>
-                            <li>Mentored junior developers and conducted code reviews</li>
-                            <li>Built real-time features using WebSockets and Redis</li>
+                            <li>Designed real-time video calling infrastructure with Mediasoup for low-latency collaboration.</li>
+                            <li>Trained pipelines to convert 2D building imagery into textured 3D walkthroughs with Three.js.</li>
+                            <li>Integrated ML workflows into production prototypes for clients in architecture and planning.</li>
                         </ul>
-                        
-                        <h3>Frontend Developer</h3>
-                        <p><strong>Digital Agency Inc.</strong> | 2020 - 2022</p>
+
+                        <h3>Indian Institute of Technology, Mandi — Research Intern</h3>
+                        <p><strong>Sep 2024 – Mar 2025</strong></p>
                         <ul>
-                            <li>Developed responsive web applications using React and Vue.js</li>
-                            <li>Collaborated with design team to implement pixel-perfect UIs</li>
-                            <li>Optimized application performance improving load times by 40%</li>
-                            <li>Integrated third-party APIs and payment systems</li>
+                            <li>Developed lightweight image compression by encoding MSB bitplanes for efficient reconstruction.</li>
+                            <li>Produced evaluation tooling to measure fidelity vs. storage across diverse datasets.</li>
                         </ul>
-                        
-                        <h3>Junior Developer</h3>
-                        <p><strong>StartupHub</strong> | 2019 - 2020</p>
+
+                        <h3>Shiv Nadar University Chennai — Research Intern</h3>
+                        <p><strong>Dec 2024 – Jan 2025</strong></p>
                         <ul>
-                            <li>Built features for MVP products using JavaScript and Node.js</li>
-                            <li>Participated in agile development and sprint planning</li>
-                            <li>Wrote unit tests achieving 85%+ code coverage</li>
+                            <li>Built a prosody similarity evaluation system using acoustic features like pitch, energy, and rhythm.</li>
+                            <li>Enabled objective comparison for speech synthesis and speaker imitation research.</li>
+                        </ul>
+
+                        <h3>National Institute of Technology, Trichy — Research Intern</h3>
+                        <p><strong>May 2024 – Jul 2024</strong></p>
+                        <ul>
+                            <li>Integrated Faster R-CNN with Prototypical Networks for few-shot object detection in autonomous driving.</li>
+                            <li>Achieved 86.25% accuracy with only 40 samples per class, enabling rapid adaptation to new objects.</li>
                         </ul>
                     `
                 }
             },
             {
                 id: 'contact',
-                title: 'Contact [P5]',
+                title: 'Connect with Raghav',
+                label: 'CONTACT',
+                minimapLabel: 'CONTACT',
                 position: { x: -15, z: 70 }, // Moved away from roads
                 size: { width: 16, height: 22, depth: 10 }, // Increased size
-                color: 0x9b59b6,
-                description: 'Get in touch with me!',
+                color: 0x6366f1,
+                description: 'Reach out to collaborate on robotics, ML, or creative technology.',
                 type: 'home',
                 debugCode: 'P5',
                 resumeContent: {
                     title: 'Contact Information',
                     content: `
-                        <h2>Let's Connect!</h2>
-                        
-                        <h3>📧 Contact Details</h3>
-                        <p><strong>Email:</strong> your.email@example.com</p>
-                        <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-                        <p><strong>Location:</strong> San Francisco, CA</p>
-                        
-                        <h3>🌐 Online Presence</h3>
-                        <p><strong>LinkedIn:</strong> linkedin.com/in/yourprofile</p>
-                        <p><strong>GitHub:</strong> github.com/yourusername</p>
-                        <p><strong>Portfolio:</strong> yourportfolio.com</p>
-                        
-                        <h3>💼 Availability</h3>
-                        <p>Currently open to new opportunities and freelance projects. 
-                        Feel free to reach out for collaborations or just to say hello!</p>
-                        
-                        <p><em>Preferred contact method: Email</em></p>
-                        <p><em>Response time: Within 24 hours</em></p>
+                        <h2>Let's Connect</h2>
+
+                        <h3>Contact Channels</h3>
+                        <p><strong>Email:</strong> <a href="mailto:raghav.vijayanand@gmail.com">raghav.vijayanand@gmail.com</a></p>
+                        <p><strong>Phone:</strong> <a href="tel:+919566131050">+91 9566131050</a></p>
+                        <p><strong>Location:</strong> Chennai, India</p>
+
+                        <h3>Online</h3>
+                        <p><strong>Website:</strong> <a href="http://www.energme.com" target="_blank">www.energme.com</a></p>
+                        <p><strong>GitHub:</strong> <a href="https://github.com/RaghavVijayanand" target="_blank">github.com/RaghavVijayanand</a></p>
+                        <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/raghav-vijayanand" target="_blank">linkedin.com/in/raghav-vijayanand</a></p>
+                        <p><strong>YouTube:</strong> <a href="https://www.youtube.com/@megatroniz2004" target="_blank">@megatroniz2004</a></p>
+                        <p><strong>Medium:</strong> <a href="https://medium.com/@raghav.vijayanand" target="_blank">@raghav.vijayanand</a></p>
+
+                        <h3>Collaboration Notes</h3>
+                        <ul>
+                            <li>Open to research collaborations, hackathons, and robotics builds.</li>
+                            <li>Happy to discuss ML consulting or creative tech projects.</li>
+                            <li>Preferred contact via email with a quick project brief.</li>
+                        </ul>
                     `
                 }
             }
@@ -308,14 +334,6 @@ class PortfolioGame3D {
             // Initial camera position
             this.camera.position.set(0, 15, 20);
             this.camera.lookAt(0, 0, 0);
-            
-            // Add a test cube to verify rendering
-            const testGeometry = new THREE.BoxGeometry(5, 5, 5);
-            const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-            const testCube = new THREE.Mesh(testGeometry, testMaterial);
-            testCube.position.set(0, 2.5, 0);
-            this.scene.add(testCube);
-            console.log('✅ Test cube added');
             
             // Start game loop
             this.gameActive = true;
@@ -391,11 +409,11 @@ class PortfolioGame3D {
         this.minimapRenderer.domElement.style.position = 'absolute';
         this.minimapRenderer.domElement.style.top = '20px';
         this.minimapRenderer.domElement.style.right = '20px';
-        this.minimapRenderer.domElement.style.border = '3px solid #00ff00';
+    this.minimapRenderer.domElement.style.border = '3px solid #38bdf8';
         this.minimapRenderer.domElement.style.borderRadius = '10px';
-        this.minimapRenderer.domElement.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
+    this.minimapRenderer.domElement.style.boxShadow = '0 0 25px rgba(56, 189, 248, 0.35)';
         this.minimapRenderer.domElement.style.zIndex = '1000';
-        this.minimapRenderer.domElement.style.background = 'rgba(0, 0, 0, 0.8)';
+    this.minimapRenderer.domElement.style.background = 'rgba(11, 17, 32, 0.9)';
         
         container.appendChild(this.minimapRenderer.domElement);
         
@@ -404,70 +422,116 @@ class PortfolioGame3D {
     }
     
     createSky() {
-        // Create a beautiful gradient sky
-        const skyGeometry = new THREE.SphereGeometry(300, 32, 32);
-        
-        // Create sky material with gradient
+        const skyGeometry = new THREE.SphereGeometry(400, 64, 64);
+
         const skyMaterial = new THREE.ShaderMaterial({
             uniforms: {
-                topColor: { value: new THREE.Color(0x0077ff) },
-                bottomColor: { value: new THREE.Color(0xffffff) },
-                offset: { value: 33 },
-                exponent: { value: 0.6 }
+                topColor: { value: new THREE.Color(0x0f172a) },
+                horizonColor: { value: new THREE.Color(0x1e293b) },
+                bottomColor: { value: new THREE.Color(0x0b1120) },
+                sunDirection: { value: new THREE.Vector3(0.5, 0.8, 0.3) },
+                atmosphereIntensity: { value: 1.1 }
             },
             vertexShader: `
                 varying vec3 vWorldPosition;
+                varying float vHeight;
                 void main() {
                     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
                     vWorldPosition = worldPosition.xyz;
+                    vHeight = normalize(position).y;
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
             `,
             fragmentShader: `
                 uniform vec3 topColor;
+                uniform vec3 horizonColor;
                 uniform vec3 bottomColor;
-                uniform float offset;
-                uniform float exponent;
+                uniform vec3 sunDirection;
+                uniform float atmosphereIntensity;
                 varying vec3 vWorldPosition;
+                varying float vHeight;
+
                 void main() {
-                    float h = normalize(vWorldPosition + offset).y;
-                    gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+                    float heightFactor = clamp(vHeight * 0.5 + 0.5, 0.0, 1.0);
+
+                    vec3 skyColor = mix(bottomColor, horizonColor, smoothstep(0.0, 0.35, heightFactor));
+                    skyColor = mix(skyColor, topColor, smoothstep(0.25, 1.0, heightFactor));
+
+                    vec3 worldDirection = normalize(vWorldPosition);
+                    float sunInfluence = max(dot(worldDirection, normalize(sunDirection)), 0.0);
+                    vec3 sunGlow = vec3(1.0, 0.86, 0.68) * pow(sunInfluence, 8.0) * atmosphereIntensity;
+
+                    gl_FragColor = vec4(skyColor + sunGlow, 1.0);
                 }
             `,
             side: THREE.BackSide
         });
-        
+
         const sky = new THREE.Mesh(skyGeometry, skyMaterial);
         this.scene.add(sky);
-        
-        // Add some clouds
-        this.createClouds();
-        
-        // Add fog for depth
-        this.scene.fog = new THREE.Fog(0x87CEEB, 80, 250);
+
+        this.createRealisticClouds();
+
+        this.scene.fog = new THREE.Fog(0x0b1120, 120, 350);
     }
     
-    createClouds() {
-        const cloudGeometry = new THREE.SphereGeometry(10, 8, 8);
-        const cloudMaterial = new THREE.MeshLambertMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.7
-        });
+    createRealisticClouds() {
+        // Create volumetric-looking clouds with better materials
+        const cloudGroup = new THREE.Group();
         
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 25; i++) {
+            const cloudGeometry = new THREE.SphereGeometry(
+                Math.random() * 15 + 8, 16, 12
+            );
+            
+            // More realistic cloud material
+            const cloudMaterial = new THREE.MeshLambertMaterial({
+                color: new THREE.Color().setHSL(0, 0, 0.9 + Math.random() * 0.1),
+                transparent: true,
+                opacity: 0.6 + Math.random() * 0.2,
+                fog: true
+            });
+            
             const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+            
+            // Position clouds more naturally
             cloud.position.set(
-                (Math.random() - 0.5) * 400,
-                Math.random() * 50 + 60,
-                (Math.random() - 0.5) * 400
+                (Math.random() - 0.5) * 600,
+                Math.random() * 40 + 80,
+                (Math.random() - 0.5) * 600
             );
+            
+            // Vary cloud shapes and sizes
             cloud.scale.set(
-                Math.random() * 2 + 1,
-                Math.random() * 0.5 + 0.5,
-                Math.random() * 2 + 1
+                Math.random() * 1.5 + 0.8,
+                Math.random() * 0.6 + 0.4,
+                Math.random() * 1.5 + 0.8
             );
+            
+            cloud.rotation.x = Math.random() * Math.PI;
+            cloud.rotation.y = Math.random() * Math.PI;
+            cloud.rotation.z = Math.random() * Math.PI;
+            
             this.scene.add(cloud);
+            
+            // Add some wispy secondary clouds
+            if (Math.random() > 0.6) {
+                const wispyCloud = new THREE.Mesh(
+                    new THREE.SphereGeometry(Math.random() * 8 + 4, 12, 8),
+                    new THREE.MeshLambertMaterial({
+                        color: 0xffffff,
+                        transparent: true,
+                        opacity: 0.3 + Math.random() * 0.2
+                    })
+                );
+                
+                wispyCloud.position.copy(cloud.position);
+                wispyCloud.position.x += (Math.random() - 0.5) * 30;
+                wispyCloud.position.y += (Math.random() - 0.5) * 15;
+                wispyCloud.position.z += (Math.random() - 0.5) * 30;
+                
+                this.scene.add(wispyCloud);
+            }
         }
     }
     
@@ -484,105 +548,196 @@ class PortfolioGame3D {
     }
     
     setupLighting() {
-        // Ambient light
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+        // Enhanced ambient light for better overall visibility
+        const ambientLight = new THREE.AmbientLight(0x5C7CFA, 0.4);
         this.scene.add(ambientLight);
         
-        // Directional light (sun)
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(50, 50, 50);
+        // Main directional light (sun) with realistic warm color
+        const directionalLight = new THREE.DirectionalLight(0xFFF8DC, 1.2);
+        directionalLight.position.set(80, 120, 60);
         directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
+        
+        // Enhanced shadow quality
+        directionalLight.shadow.mapSize.width = 4096;
+        directionalLight.shadow.mapSize.height = 4096;
         directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 200;
-        directionalLight.shadow.camera.left = -100;
-        directionalLight.shadow.camera.right = 100;
-        directionalLight.shadow.camera.top = 100;
-        directionalLight.shadow.camera.bottom = -100;
+        directionalLight.shadow.camera.far = 300;
+        directionalLight.shadow.camera.left = -150;
+        directionalLight.shadow.camera.right = 150;
+        directionalLight.shadow.camera.top = 150;
+        directionalLight.shadow.camera.bottom = -150;
+        directionalLight.shadow.bias = -0.0001;
         this.scene.add(directionalLight);
         
-        // Point lights for atmosphere
-        const pointLight1 = new THREE.PointLight(0xffa500, 0.5, 30);
-        pointLight1.position.set(20, 10, 20);
-        this.scene.add(pointLight1);
+        // Secondary fill light for softer shadows
+        const fillLight = new THREE.DirectionalLight(0x87CEEB, 0.3);
+        fillLight.position.set(-50, 60, -80);
+        this.scene.add(fillLight);
         
-        const pointLight2 = new THREE.PointLight(0x00ff00, 0.3, 25);
-        pointLight2.position.set(-30, 8, -30);
-        this.scene.add(pointLight2);
+        // Atmospheric rim lighting
+        const rimLight = new THREE.DirectionalLight(0xFFE4B5, 0.2);
+        rimLight.position.set(0, 30, -100);
+        this.scene.add(rimLight);
+        
+        // Subtle colored accent lights for ambiance
+        const accentLight1 = new THREE.PointLight(0xFFA500, 0.3, 50);
+        accentLight1.position.set(40, 15, 40);
+        this.scene.add(accentLight1);
+        
+        const accentLight2 = new THREE.PointLight(0x87CEEB, 0.2, 40);
+        accentLight2.position.set(-60, 12, -40);
+        this.scene.add(accentLight2);
+        
+        // Store reference to main light for day/night cycle potential
+        this.mainLight = directionalLight;
     }
     
     createWorld() {
-        // Ground plane
-        const groundGeometry = new THREE.PlaneGeometry(this.worldSize.width, this.worldSize.height);
+        // Enhanced ground with more realistic material
+        const groundGeometry = new THREE.PlaneGeometry(this.worldSize.width, this.worldSize.height, 64, 64);
+        
+        // Add subtle height variation so ground feels alive without swallowing roads
+        const groundVertices = groundGeometry.attributes.position.array;
+        const variation = this.environmentHeights.groundVariation;
+        for (let i = 0; i < groundVertices.length; i += 3) {
+            groundVertices[i + 2] = Math.sin(groundVertices[i] * 0.01) * Math.cos(groundVertices[i + 1] * 0.01) * variation;
+        }
+        groundGeometry.attributes.position.needsUpdate = true;
+        groundGeometry.computeVertexNormals();
+        
         const groundMaterial = new THREE.MeshLambertMaterial({ 
-            color: 0x7FB069,
-            transparent: true,
-            opacity: 0.9
+            color: 0x4A7C59,  // More realistic grass color
+            transparent: false,
+            fog: true
         });
+        
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2;
+    ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         this.scene.add(ground);
         
         // Create roads
         this.createRoads();
         
-        // Create portfolio buildings
+        // Create portfolio buildings (only the essential ones)
         this.createPortfolioBuildings();
         
-        // Create scenery buildings
-        this.createSceneryBuildings();
+        // Create minimal scenery buildings (reduce unnecessary buildings)
+        this.createMinimalSceneryBuildings();
         
-        // Create trees
+        // Create enhanced trees
         this.createTrees();
         
         // Create street furniture
         this.createStreetFurniture();
+        
+        // Create minimap labels for portfolio buildings
+        this.createMinimapLabels();
+    }
+    
+    createMinimapLabels() {
+        // Add building labels visible in the minimap
+        this.portfolioSections.forEach(section => {
+            // Create label background
+            const labelGeometry = new THREE.PlaneGeometry(6, 1.5);
+            const labelMaterial = new THREE.MeshBasicMaterial({
+                color: 0x0b1120,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const labelBg = new THREE.Mesh(labelGeometry, labelMaterial);
+            labelBg.position.set(
+                section.position.x,
+                section.size.height + 8, // Above the building for minimap visibility
+                section.position.z
+            );
+            labelBg.rotation.x = -Math.PI / 2; // Lay flat for top-down view
+            
+            // Create text texture
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 64;
+            
+            context.fillStyle = '#0b1120';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.fillStyle = '#38bdf8';
+            context.font = '600 26px "Segoe UI", Arial, sans-serif';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            const minimapLabel = section.minimapLabel || section.label || section.debugCode || '';
+            context.fillText(minimapLabel, canvas.width/2, canvas.height/2);
+            
+            const textTexture = new THREE.CanvasTexture(canvas);
+            const textMaterial = new THREE.MeshBasicMaterial({
+                map: textTexture,
+                transparent: true
+            });
+            
+            const textMesh = new THREE.Mesh(labelGeometry, textMaterial);
+            textMesh.position.copy(labelBg.position);
+            textMesh.position.y += 0.01;
+            textMesh.rotation.x = -Math.PI / 2;
+            
+            this.scene.add(labelBg);
+            this.scene.add(textMesh);
+        });
     }
     
     createRoads() {
-        const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+        // Enhanced road material with more realistic appearance
+        const roadMaterial = new THREE.MeshLambertMaterial({ 
+            color: 0x2C2C2C,  // Darker, more realistic asphalt color
+            fog: true
+        });
+        const roadElevation = this.environmentHeights.roadElevation;
         
         // Main horizontal roads
         const mainRoadGeometry = new THREE.PlaneGeometry(this.worldSize.width, 8);
         
-        // Road 1
+        // Road 1 (main)
         const road1 = new THREE.Mesh(mainRoadGeometry, roadMaterial);
         road1.rotation.x = -Math.PI / 2;
-        road1.position.y = 0.1;
+        road1.position.y = roadElevation;
         road1.position.z = 0;
+        road1.receiveShadow = true;
         this.scene.add(road1);
         
-        // Road 2
+        // Road 2 (north)
         const road2 = new THREE.Mesh(mainRoadGeometry, roadMaterial);
         road2.rotation.x = -Math.PI / 2;
-        road2.position.y = 0.1;
+    road2.position.y = roadElevation;
         road2.position.z = 40;
+        road2.receiveShadow = true;
         this.scene.add(road2);
         
-        // Road 3
+        // Road 3 (south)
         const road3 = new THREE.Mesh(mainRoadGeometry, roadMaterial);
         road3.rotation.x = -Math.PI / 2;
-        road3.position.y = 0.1;
+    road3.position.y = roadElevation;
         road3.position.z = -40;
+        road3.receiveShadow = true;
         this.scene.add(road3);
         
         // Vertical roads
         const verticalRoadGeometry = new THREE.PlaneGeometry(8, this.worldSize.height);
         
-        // Road 4
+        // Road 4 (east)
         const road4 = new THREE.Mesh(verticalRoadGeometry, roadMaterial);
         road4.rotation.x = -Math.PI / 2;
-        road4.position.y = 0.1;
+    road4.position.y = roadElevation;
         road4.position.x = 30;
+        road4.receiveShadow = true;
         this.scene.add(road4);
         
-        // Road 5
+        // Road 5 (west)
         const road5 = new THREE.Mesh(verticalRoadGeometry, roadMaterial);
         road5.rotation.x = -Math.PI / 2;
-        road5.position.y = 0.1;
+    road5.position.y = roadElevation;
         road5.position.x = -30;
+        road5.receiveShadow = true;
         this.scene.add(road5);
         
         // Add road markings
@@ -590,72 +745,72 @@ class PortfolioGame3D {
     }
     
     createRoadMarkings() {
-        const markingMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+        const markingMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xFFFFFF,
+            fog: true
+        });
+        const markingElevation = this.environmentHeights.markingElevation;
         
-        // Main roads center lines
-        const centerLineGeometry = new THREE.PlaneGeometry(2, 0.3);
+        // Improved road markings with better visibility
+        const centerLineGeometry = new THREE.PlaneGeometry(0.3, 4); // Dashed line segments
         
         // Horizontal roads center lines
         [-40, 0, 40].forEach(z => {
-            for (let x = -this.worldSize.width/2; x < this.worldSize.width/2; x += 6) {
+            for (let x = -this.worldSize.width/2; x < this.worldSize.width/2; x += 8) {
                 const marking = new THREE.Mesh(centerLineGeometry, markingMaterial);
+                marking.position.set(x, markingElevation, z);
                 marking.rotation.x = -Math.PI / 2;
-                marking.position.set(x, 0.15, z);
                 this.scene.add(marking);
             }
         });
         
         // Vertical roads center lines
+        const verticalLineGeometry = new THREE.PlaneGeometry(4, 0.3);
         [-30, 30].forEach(x => {
-            for (let z = -this.worldSize.height/2; z < this.worldSize.height/2; z += 6) {
-                const marking = new THREE.Mesh(centerLineGeometry, markingMaterial);
+            for (let z = -this.worldSize.height/2; z < this.worldSize.height/2; z += 8) {
+                const marking = new THREE.Mesh(verticalLineGeometry, markingMaterial);
+                marking.position.set(x, markingElevation, z);
                 marking.rotation.x = -Math.PI / 2;
-                marking.rotation.z = Math.PI / 2;
-                marking.position.set(x, 0.15, z);
                 this.scene.add(marking);
             }
         });
         
-        // Add crosswalk markings at intersections
+        // Add some crosswalk markings at intersections
         this.createCrosswalks();
     }
     
     createCrosswalks() {
-        const crosswalkMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
-        const crosswalkGeometry = new THREE.PlaneGeometry(1, 8);
+        const crosswalkMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xFFFFFF,
+            fog: true
+        });
+        const crosswalkElevation = this.environmentHeights.crosswalkElevation;
         
-        // Crosswalks at major intersections
+        // Crosswalk stripes
+        const stripeGeometry = new THREE.PlaneGeometry(1, 8);
+        
+        // Major intersections
         const intersections = [
-            { x: -30, z: 0 }, { x: 30, z: 0 },
-            { x: -30, z: 40 }, { x: 30, z: 40 },
-            { x: -30, z: -40 }, { x: 30, z: -40 }
+            { x: 30, z: 0 }, { x: -30, z: 0 },
+            { x: 30, z: 40 }, { x: -30, z: 40 },
+            { x: 30, z: -40 }, { x: -30, z: -40 }
         ];
         
         intersections.forEach(intersection => {
-            // Horizontal crosswalk
             for (let i = -3; i <= 3; i += 2) {
-                const crosswalk = new THREE.Mesh(crosswalkGeometry, crosswalkMaterial);
-                crosswalk.rotation.x = -Math.PI / 2;
-                crosswalk.position.set(intersection.x + i, 0.16, intersection.z);
-                this.scene.add(crosswalk);
-            }
-            
-            // Vertical crosswalk
-            const verticalCrosswalkGeometry = new THREE.PlaneGeometry(8, 1);
-            for (let i = -3; i <= 3; i += 2) {
-                const crosswalk = new THREE.Mesh(verticalCrosswalkGeometry, crosswalkMaterial);
-                crosswalk.rotation.x = -Math.PI / 2;
-                crosswalk.position.set(intersection.x, 0.16, intersection.z + i);
-                this.scene.add(crosswalk);
+                const stripe = new THREE.Mesh(stripeGeometry, crosswalkMaterial);
+                stripe.position.set(intersection.x + i, crosswalkElevation, intersection.z);
+                stripe.rotation.x = -Math.PI / 2;
+                this.scene.add(stripe);
             }
         });
     }
     
     createPortfolioBuildings() {
-        console.log('🏢 Creating Portfolio Buildings...');
+        this.buildingLabels = [];
+        this.sectionGuideLabels = [];
+        this.sectionGuideHalos = [];
         this.portfolioSections.forEach(section => {
-            console.log(`📍 Building ${section.debugCode}: ${section.title} at (${section.position.x}, ${section.position.z}) - Size: ${section.size.width}x${section.size.height}x${section.size.depth}`);
-            
             const building = this.createRealisticBuilding(
                 section.size.width,
                 section.size.height,
@@ -664,7 +819,7 @@ class PortfolioGame3D {
                 section.position.x,
                 section.position.z,
                 section.type,
-                section.debugCode
+                section.label || section.debugCode
             );
             
             building.userData = section;
@@ -672,29 +827,34 @@ class PortfolioGame3D {
             this.scene.add(building);
             
             // Add building label (pass height as parameter)
-            this.createBuildingLabel(building, section.title, section.size.height);
+            const buildingLabel = this.createBuildingLabel(building, section.title, section.size.height);
+            if (buildingLabel) {
+                this.buildingLabels.push(buildingLabel);
+            }
+
+            const guidePlanes = this.createSectionGuide(
+                building,
+                section.label || section.debugCode || section.title,
+                section.size
+            );
+            if (guidePlanes && guidePlanes.length) {
+                this.sectionGuideLabels.push(...guidePlanes);
+            }
         });
         console.log('✅ Portfolio Buildings Created');
     }
     
-    createSceneryBuildings() {
-        // Create fewer, strategically placed buildings only in green areas
-        const sceneryBuildings = [
-            // Buildings in corners (far from roads)
-            { x: -60, z: -60, width: 15, height: 20, depth: 12, color: 0x95a5a6, type: 'office', debugCode: 'S1' },
-            { x: 60, z: -60, width: 12, height: 18, depth: 9, color: 0x3498db, type: 'residential', debugCode: 'S2' },
-            { x: -60, z: 60, width: 18, height: 25, depth: 15, color: 0x2c3e50, type: 'office', debugCode: 'S3' },
-            { x: 60, z: 60, width: 14, height: 21, depth: 11, color: 0x9b59b6, type: 'residential', debugCode: 'S4' },
-            
-            // A few buildings in mid-distance green areas
-            { x: -70, z: 15, width: 12, height: 16, depth: 9, color: 0xe74c3c, type: 'shop', debugCode: 'S5' },
-            { x: 70, z: -15, width: 15, height: 19, depth: 12, color: 0xf39c12, type: 'commercial', debugCode: 'S6' }
-            
-            // Removed S7 and S8 - not required and S8 was on road
+    createMinimalSceneryBuildings() {
+        // Create only essential background buildings for context, not clutter
+        const essentialBuildings = [
+            // Background skyline buildings (far from roads)
+            { x: -80, z: -80, width: 15, height: 35, depth: 12, color: 0x708090, type: 'office' },
+            { x: 80, z: -80, width: 18, height: 42, depth: 15, color: 0x696969, type: 'office' },
+            { x: -80, z: 80, width: 12, height: 28, depth: 10, color: 0x778899, type: 'residential' },
+            { x: 80, z: 80, width: 20, height: 38, depth: 18, color: 0x2F4F4F, type: 'office' }
         ];
         
-        sceneryBuildings.forEach(building => {
-            console.log(`🏠 Building ${building.debugCode}: ${building.type} at (${building.x}, ${building.z}) - Size: ${building.width}x${building.height}x${building.depth}`);
+        essentialBuildings.forEach(building => {
             const mesh = this.createRealisticBuilding(
                 building.width,
                 building.height,
@@ -702,31 +862,61 @@ class PortfolioGame3D {
                 building.color,
                 building.x,
                 building.z,
-                building.type,
-                building.debugCode
+                building.type
             );
             this.scene.add(mesh);
         });
-        console.log('✅ Scenery Buildings Created');
+        console.log('✅ Essential Scenery Buildings Created');
     }
     
-    createRealisticBuilding(width, height, depth, color, x, z, type, debugCode = null) {
+    createRealisticBuilding(width, height, depth, color, x, z, type, signLabel = null) {
         const buildingGroup = new THREE.Group();
         
-        // Main building structure
+        // Enhanced main building structure with better materials
         const geometry = new THREE.BoxGeometry(width, height, depth);
-        const material = new THREE.MeshLambertMaterial({ color: color });
+        
+        // More realistic building material based on type
+        let material;
+        switch(type) {
+            case 'office':
+                material = new THREE.MeshLambertMaterial({ 
+                    color: new THREE.Color(color).multiplyScalar(0.9),
+                    fog: true
+                });
+                break;
+            case 'residential':
+                material = new THREE.MeshLambertMaterial({ 
+                    color: new THREE.Color(color).multiplyScalar(1.1),
+                    fog: true
+                });
+                break;
+            case 'shop':
+            case 'commercial':
+                material = new THREE.MeshLambertMaterial({ 
+                    color: new THREE.Color(color),
+                    emissive: new THREE.Color(color).multiplyScalar(0.1),
+                    emissiveIntensity: 0.05,
+                    fog: true
+                });
+                break;
+            default:
+                material = new THREE.MeshLambertMaterial({ 
+                    color: color,
+                    fog: true
+                });
+        }
+        
         const building = new THREE.Mesh(geometry, material);
         building.position.y = height / 2;
         building.castShadow = true;
         building.receiveShadow = true;
         buildingGroup.add(building);
         
-        // Add building name banners on all 4 sides
-        if (debugCode) {
-            this.addBuildingBanners(buildingGroup, debugCode, width, height, depth);
+        // Add glowing ground boards so visitors know each section
+        if (signLabel) {
+            this.addBuildingIdentifierBoards(buildingGroup, signLabel, width, depth);
         }
-        
+
         // Add proper windows on all sides
         this.addImprovedWindows(buildingGroup, width, height, depth, color);
         
@@ -778,7 +968,7 @@ class PortfolioGame3D {
     }
     
     addWindows(buildingGroup, width, height, depth, baseColor) {
-        const windowMaterial = new THREE.MeshBasicMaterial({ 
+        const windowMaterial = new THREE.MeshLambertMaterial({ 
             color: Math.random() > 0.3 ? 0xffffcc : 0x444444,
             emissive: Math.random() > 0.7 ? 0x666600 : 0x000000,
             emissiveIntensity: 0.2
@@ -865,10 +1055,11 @@ class PortfolioGame3D {
     
     addSignage(buildingGroup, width, height, depth) {
         // Add a simple sign
+        const accentPalette = [0x38bdf8, 0xc084fc, 0x22d3ee, 0xfbbf24];
         const signMaterial = new THREE.MeshLambertMaterial({ 
-            color: [0xff0000, 0x00ff00, 0x0000ff, 0xffff00][Math.floor(Math.random() * 4)],
-            emissive: 0x333333,
-            emissiveIntensity: 0.3
+            color: accentPalette[Math.floor(Math.random() * accentPalette.length)],
+            emissive: 0x0b1120,
+            emissiveIntensity: 0.25
         });
         
         const signGeometry = new THREE.PlaneGeometry(width * 0.6, 1);
@@ -876,83 +1067,119 @@ class PortfolioGame3D {
         sign.position.set(0, 4, depth/2 + 0.02);
         buildingGroup.add(sign);
     }
-    
-    addBuildingBanners(buildingGroup, debugCode, width, height, depth) {
-        const portfolioTitles = {
-            'P1': 'ABOUT ME',
-            'P2': 'PROJECTS', 
-            'P3': 'SKILLS',
-            'P4': 'EXPERIENCE',
-            'P5': 'CONTACT'
-        };
-        
-        const title = portfolioTitles[debugCode] || debugCode;
-        
-        // Create banner on all 4 sides
-        const bannerHeight = 3;
-        const bannerWidth = Math.max(width * 0.8, depth * 0.8);
-        
-        const positions = [
-            { x: 0, y: height * 0.8, z: depth/2 + 0.1, rotY: 0 }, // Front
-            { x: 0, y: height * 0.8, z: -depth/2 - 0.1, rotY: Math.PI }, // Back
-            { x: width/2 + 0.1, y: height * 0.8, z: 0, rotY: Math.PI/2 }, // Right
-            { x: -width/2 - 0.1, y: height * 0.8, z: 0, rotY: -Math.PI/2 } // Left
+
+    addBuildingIdentifierBoards(buildingGroup, label, width, depth) {
+        if (!label) {
+            return;
+        }
+
+        const boardText = label.toUpperCase();
+        const boardWidth = Math.min(width * 0.9, 9);
+        const boardHeight = 1.8;
+        const boardSpacing = depth / 2 + 1.5;
+        const placements = [
+            { position: new THREE.Vector3(0, 0, boardSpacing), rotationY: 0, primary: true },
+            { position: new THREE.Vector3(0, 0, -boardSpacing), rotationY: Math.PI, primary: false }
         ];
-        
-        positions.forEach(pos => {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = 512;
-            canvas.height = 128;
-            
-            // Background gradient
-            const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#001122');
-            gradient.addColorStop(1, '#003366');
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Border
-            context.strokeStyle = '#00ffff';
-            context.lineWidth = 8;
-            context.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
-            
-            // Text
-            context.fillStyle = '#00ffff';
-            context.font = 'bold 36px Arial';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillText(title, canvas.width/2, canvas.height/2);
-            
-            // Create material and mesh
-            const texture = new THREE.CanvasTexture(canvas);
-            const bannerMaterial = new THREE.MeshLambertMaterial({ 
-                map: texture,
-                transparent: true,
-                emissive: 0x002244,
-                emissiveIntensity: 0.3
-            });
-            
-            const bannerGeometry = new THREE.PlaneGeometry(bannerWidth, bannerHeight);
-            const banner = new THREE.Mesh(bannerGeometry, bannerMaterial);
-            banner.position.set(pos.x, pos.y, pos.z);
-            banner.rotation.y = pos.rotY;
-            buildingGroup.add(banner);
+
+        placements.forEach(spec => {
+            const board = this.createIdentifierBoard(boardText, boardWidth, boardHeight, spec.primary);
+            board.position.copy(spec.position);
+            board.rotation.y = spec.rotationY;
+            buildingGroup.add(board);
         });
+    }
+
+    createIdentifierBoard(text, boardWidth, boardHeight, isPrimaryFace) {
+        const group = new THREE.Group();
+
+        const baseGeometry = new THREE.BoxGeometry(boardWidth * 0.6, 0.3, 1.2);
+        const baseMaterial = new THREE.MeshStandardMaterial({
+            color: 0x0b1120,
+            roughness: 0.7,
+            metalness: 0.2
+        });
+        const base = new THREE.Mesh(baseGeometry, baseMaterial);
+        base.position.y = 0.15;
+        base.receiveShadow = true;
+        group.add(base);
+
+        const stemGeometry = new THREE.BoxGeometry(0.4, 1.2, 0.4);
+        const stemMaterial = new THREE.MeshStandardMaterial({
+            color: 0x111b2f,
+            metalness: 0.35,
+            roughness: 0.4,
+            emissive: 0x0b1120,
+            emissiveIntensity: 0.3
+        });
+        const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+        stem.position.y = 0.75;
+        group.add(stem);
+
+        const frameGeometry = new THREE.PlaneGeometry(boardWidth + 0.3, boardHeight + 0.3);
+        const frameMaterial = new THREE.MeshLambertMaterial({
+            color: isPrimaryFace ? 0x38bdf8 : 0xc084fc,
+            emissive: isPrimaryFace ? 0x123b56 : 0x3b1256,
+            emissiveIntensity: 0.35
+        });
+        const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+        frame.position.set(0, 1.5, -0.03);
+        group.add(frame);
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = 1024;
+        canvas.height = 256;
+        context.fillStyle = isPrimaryFace ? '#04162E' : '#160924';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.strokeStyle = isPrimaryFace ? '#38bdf8' : '#c084fc';
+        context.lineWidth = 10;
+        context.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
+        context.fillStyle = '#f8fafc';
+        context.font = '700 72px "Segoe UI", Arial, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const boardMaterial = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true
+        });
+        const board = new THREE.Mesh(new THREE.PlaneGeometry(boardWidth, boardHeight), boardMaterial);
+        board.position.y = 1.5;
+        group.add(board);
+
+        return group;
     }
     
     addImprovedWindows(buildingGroup, width, height, depth, baseColor) {
-        const windowMaterial = new THREE.MeshLambertMaterial({ 
-            color: 0x87ceeb,
-            transparent: true,
-            opacity: 0.7,
-            emissive: 0x001133,
-            emissiveIntensity: 0.2
-        });
+        // More realistic window materials with reflections
+        const windowMaterials = [
+            new THREE.MeshLambertMaterial({ 
+                color: 0x87ceeb,
+                transparent: true,
+                opacity: 0.6,
+                emissive: 0x001133,
+                emissiveIntensity: Math.random() > 0.7 ? 0.3 : 0.1 // Some lit windows
+            }),
+            new THREE.MeshLambertMaterial({ 
+                color: 0x333333,
+                transparent: true,
+                opacity: 0.8 // Dark/unlit windows
+            }),
+            new THREE.MeshLambertMaterial({ 
+                color: 0xffffcc,
+                transparent: true,
+                opacity: 0.7,
+                emissive: 0x443300,
+                emissiveIntensity: 0.4 // Warm lit windows
+            })
+        ];
         
-        const windowSize = 1.5;
-        const windowSpacing = 2.5;
-        const floorHeight = 3;
+        const windowSize = 1.2;
+        const windowSpacing = 2.2;
+        const floorHeight = 3.5;
         
         // Calculate number of floors and windows per floor
         const floors = Math.floor(height / floorHeight);
@@ -968,7 +1195,7 @@ class PortfolioGame3D {
                 // Front face
                 const frontWindow = new THREE.Mesh(
                     new THREE.PlaneGeometry(windowSize, windowSize),
-                    windowMaterial
+                    windowMaterials[Math.floor(Math.random() * windowMaterials.length)]
                 );
                 frontWindow.position.set(windowX, windowY, depth/2 + 0.01);
                 buildingGroup.add(frontWindow);
@@ -976,7 +1203,7 @@ class PortfolioGame3D {
                 // Back face
                 const backWindow = new THREE.Mesh(
                     new THREE.PlaneGeometry(windowSize, windowSize),
-                    windowMaterial
+                    windowMaterials[Math.floor(Math.random() * windowMaterials.length)]
                 );
                 backWindow.position.set(windowX, windowY, -depth/2 - 0.01);
                 backWindow.rotation.y = Math.PI;
@@ -993,7 +1220,7 @@ class PortfolioGame3D {
                 // Right face
                 const rightWindow = new THREE.Mesh(
                     new THREE.PlaneGeometry(windowSize, windowSize),
-                    windowMaterial
+                    windowMaterials[Math.floor(Math.random() * windowMaterials.length)]
                 );
                 rightWindow.position.set(width/2 + 0.01, windowY, windowZ);
                 rightWindow.rotation.y = Math.PI/2;
@@ -1002,7 +1229,7 @@ class PortfolioGame3D {
                 // Left face
                 const leftWindow = new THREE.Mesh(
                     new THREE.PlaneGeometry(windowSize, windowSize),
-                    windowMaterial
+                    windowMaterials[Math.floor(Math.random() * windowMaterials.length)]
                 );
                 leftWindow.position.set(-width/2 - 0.01, windowY, windowZ);
                 leftWindow.rotation.y = -Math.PI/2;
@@ -1062,15 +1289,15 @@ class PortfolioGame3D {
         canvas.height = 128; // Increased resolution
         
         // Background with border
-        context.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    context.fillStyle = 'rgba(11, 17, 32, 0.92)';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        context.strokeStyle = '#00ff00';
-        context.lineWidth = 4;
+    context.strokeStyle = '#38bdf8';
+    context.lineWidth = 3;
         context.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
         
         // Text
-        context.fillStyle = '#00ff00';
-        context.font = 'bold 32px Arial';  // Larger font
+    context.fillStyle = '#e2ecff';
+    context.font = '600 34px "Segoe UI", Arial, sans-serif';
         context.textAlign = 'center';
         context.fillText(text, canvas.width / 2, canvas.height / 2 + 12);
         
@@ -1086,6 +1313,111 @@ class PortfolioGame3D {
         label.position.y = buildingHeight / 2 + 3;  // Use passed height parameter
         // Don't set lookAt here - will be updated in animation loop
         building.add(label);
+        return label;
+    }
+
+    createSectionGuide(building, text, size) {
+        if (!text) {
+            return null;
+        }
+
+        const labelText = text.toUpperCase();
+        const guideGroup = new THREE.Group();
+        const depthOffset = ((size && size.depth) || 10) / 2 + 4;
+        guideGroup.position.set(0, 0, depthOffset);
+
+        const floorHaloGeometry = new THREE.CircleGeometry(2.8, 48);
+        const floorHaloMaterial = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.25
+        });
+        const floorHalo = new THREE.Mesh(floorHaloGeometry, floorHaloMaterial);
+        floorHalo.rotation.x = -Math.PI / 2;
+        floorHalo.position.y = 0.02;
+        guideGroup.add(floorHalo);
+
+        const pedestalGeometry = new THREE.CylinderGeometry(1.2, 1.2, 0.45, 24);
+        const pedestalMaterial = new THREE.MeshStandardMaterial({
+            color: 0x0b1120,
+            emissive: 0x0c1a2f,
+            emissiveIntensity: 0.4
+        });
+        const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
+        pedestal.castShadow = false;
+        pedestal.receiveShadow = true;
+        guideGroup.add(pedestal);
+
+        const poleGeometry = new THREE.CylinderGeometry(0.15, 0.2, 2.5, 12);
+        const poleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x38bdf8,
+            emissive: 0x38bdf8,
+            emissiveIntensity: 0.5
+        });
+        const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+        pole.position.y = 1.4;
+        pole.castShadow = true;
+        guideGroup.add(pole);
+
+        const haloGeometry = new THREE.TorusGeometry(0.9, 0.06, 16, 42);
+        const haloMaterial = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.85
+        });
+        const halo = new THREE.Mesh(haloGeometry, haloMaterial);
+        halo.position.y = 2.2;
+        halo.rotation.x = Math.PI / 2;
+        guideGroup.add(halo);
+        this.sectionGuideHalos.push(halo);
+
+        const arrowGeometry = new THREE.ConeGeometry(0.35, 0.9, 24);
+        const arrowMaterial = new THREE.MeshStandardMaterial({
+            color: 0xfbbf24,
+            emissive: 0xfbbf24,
+            emissiveIntensity: 0.5
+        });
+        const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+        arrow.position.y = 3.2;
+        arrow.rotation.x = Math.PI;
+        guideGroup.add(arrow);
+
+        const panelGeometry = new THREE.PlaneGeometry(6, 1.7);
+        const panelMaterial = new THREE.MeshBasicMaterial({
+            color: 0x050c1a,
+            transparent: true,
+            opacity: 0.88
+        });
+        const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+        panel.position.y = 2.8;
+        guideGroup.add(panel);
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = 512;
+        canvas.height = 128;
+        context.fillStyle = 'rgba(5, 11, 26, 0.9)';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.strokeStyle = '#38bdf8';
+        context.lineWidth = 6;
+        context.strokeRect(10, 20, canvas.width - 20, canvas.height - 40);
+        context.fillStyle = '#e2ecff';
+        context.font = '600 46px "Segoe UI", Arial, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(labelText, canvas.width / 2, canvas.height / 2);
+
+        const textTexture = new THREE.CanvasTexture(canvas);
+        const textMaterial = new THREE.MeshBasicMaterial({
+            map: textTexture,
+            transparent: true
+        });
+        const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 1.4), textMaterial);
+        textMesh.position.set(0, 2.8, 0.02);
+        guideGroup.add(textMesh);
+
+        building.add(guideGroup);
+        return [panel, textMesh];
     }
     
     createTrees() {
@@ -1151,26 +1483,50 @@ class PortfolioGame3D {
     createBush(x, z) {
         const bushGroup = new THREE.Group();
         
-        // Create multiple small spheres for a bushy look
-        const bushColors = [0x228B22, 0x32CD32, 0x006400, 0x90EE90];
-        const sphereCount = Math.floor(Math.random() * 3) + 3;
+        // Create multiple small spheres for a more realistic bushy look
+        const bushColors = [0x228B22, 0x32CD32, 0x006400, 0x90EE90, 0x8FBC8F];
+        const sphereCount = Math.floor(Math.random() * 4) + 3;
         
         for (let i = 0; i < sphereCount; i++) {
             const sphereGeometry = new THREE.SphereGeometry(
-                Math.random() * 1.5 + 1, 8, 6
+                Math.random() * 1.2 + 0.8, 12, 8
             );
             const sphereMaterial = new THREE.MeshLambertMaterial({
-                color: bushColors[Math.floor(Math.random() * bushColors.length)]
+                color: bushColors[Math.floor(Math.random() * bushColors.length)],
+                fog: true
             });
             const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             
             sphere.position.set(
-                (Math.random() - 0.5) * 2,
-                Math.random() * 2 + 1,
-                (Math.random() - 0.5) * 2
+                (Math.random() - 0.5) * 2.5,
+                Math.random() * 1.5 + 1,
+                (Math.random() - 0.5) * 2.5
             );
             
+            sphere.castShadow = true;
+            sphere.receiveShadow = true;
             bushGroup.add(sphere);
+        }
+        
+        // Add some small berry details randomly
+        if (Math.random() > 0.7) {
+            for (let i = 0; i < 3; i++) {
+                const berryGeometry = new THREE.SphereGeometry(0.1, 6, 4);
+                const berryMaterial = new THREE.MeshLambertMaterial({
+                    color: Math.random() > 0.5 ? 0xFF0000 : 0x800080,
+                    emissive: 0x220000,
+                    emissiveIntensity: 0.2
+                });
+                const berry = new THREE.Mesh(berryGeometry, berryMaterial);
+                
+                berry.position.set(
+                    (Math.random() - 0.5) * 2,
+                    Math.random() * 2 + 1,
+                    (Math.random() - 0.5) * 2
+                );
+                
+                bushGroup.add(berry);
+            }
         }
         
         bushGroup.position.set(x, 0, z);
@@ -1180,40 +1536,75 @@ class PortfolioGame3D {
     createTree(x, z, scale = 1) {
         const group = new THREE.Group();
         
-        // Trunk
-        const trunkGeometry = new THREE.CylinderGeometry(0.5 * scale, 0.8 * scale, 4 * scale, 8);
-        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        // More realistic trunk with texture variation
+        const trunkGeometry = new THREE.CylinderGeometry(
+            0.6 * scale, 1.0 * scale, 5 * scale, 12
+        );
+        const trunkMaterial = new THREE.MeshLambertMaterial({ 
+            color: new THREE.Color().setHSL(0.083, 0.4, 0.3) // Brown with slight variation
+        });
         const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-        trunk.position.y = 2 * scale;
+        trunk.position.y = 2.5 * scale;
         trunk.castShadow = true;
+        trunk.receiveShadow = true;
         group.add(trunk);
         
-        // Leaves - create multiple layers for variety
-        const leafColors = [0x228B22, 0x32CD32, 0x006400];
+        // Create multiple leaf clusters for realistic canopy
+        const leafColors = [0x228B22, 0x32CD32, 0x006400, 0x8FBC8F];
         const leafColor = leafColors[Math.floor(Math.random() * leafColors.length)];
         
         // Main canopy
-        const leavesGeometry = new THREE.SphereGeometry(3 * scale, 8, 6);
-        const leavesMaterial = new THREE.MeshLambertMaterial({ color: leafColor });
-        const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-        leaves.position.y = 5 * scale;
-        leaves.castShadow = true;
-        group.add(leaves);
+        const mainCanopyGeometry = new THREE.SphereGeometry(3.5 * scale, 16, 12);
+        const mainCanopyMaterial = new THREE.MeshLambertMaterial({ 
+            color: leafColor,
+            fog: true
+        });
+        const mainCanopy = new THREE.Mesh(mainCanopyGeometry, mainCanopyMaterial);
+        mainCanopy.position.y = 6 * scale;
+        mainCanopy.castShadow = true;
+        group.add(mainCanopy);
         
-        // Add smaller leaf clusters for more natural look
-        for (let i = 0; i < 2; i++) {
-            const smallLeavesGeometry = new THREE.SphereGeometry(1.5 * scale, 6, 4);
-            const smallLeaves = new THREE.Mesh(smallLeavesGeometry, leavesMaterial);
-            smallLeaves.position.set(
-                (Math.random() - 0.5) * 3 * scale,
-                (4 + Math.random() * 2) * scale,
-                (Math.random() - 0.5) * 3 * scale
+        // Add secondary canopy clusters for more natural look
+        for (let i = 0; i < 3; i++) {
+            const clusterGeometry = new THREE.SphereGeometry(
+                (2 + Math.random()) * scale, 12, 8
             );
-            smallLeaves.castShadow = true;
-            group.add(smallLeaves);
+            const clusterMaterial = new THREE.MeshLambertMaterial({
+                color: new THREE.Color(leafColor).multiplyScalar(0.9 + Math.random() * 0.2)
+            });
+            const cluster = new THREE.Mesh(clusterGeometry, clusterMaterial);
+            
+            cluster.position.set(
+                (Math.random() - 0.5) * 4 * scale,
+                (5 + Math.random() * 2) * scale,
+                (Math.random() - 0.5) * 4 * scale
+            );
+            cluster.castShadow = true;
+            group.add(cluster);
+        }
+        
+        // Add small branches
+        for (let i = 0; i < 4; i++) {
+            const branchGeometry = new THREE.CylinderGeometry(
+                0.1 * scale, 0.2 * scale, 1.5 * scale, 6
+            );
+            const branchMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x8B4513
+            });
+            const branch = new THREE.Mesh(branchGeometry, branchMaterial);
+            
+            branch.position.set(
+                (Math.random() - 0.5) * 2 * scale,
+                (3 + Math.random() * 2) * scale,
+                (Math.random() - 0.5) * 2 * scale
+            );
+            branch.rotation.z = (Math.random() - 0.5) * Math.PI / 3;
+            branch.castShadow = true;
+            group.add(branch);
         }
         
         group.position.set(x, 0, z);
+        group.userData = { isTree: true }; // For animation identification
         return group;
     }
     
@@ -1242,10 +1633,11 @@ class PortfolioGame3D {
         
         // Light
         const lightGeometry = new THREE.SphereGeometry(0.5, 8, 6);
-        const lightMaterial = new THREE.MeshBasicMaterial({ 
+        const lightMaterial = new THREE.MeshStandardMaterial({ 
             color: 0xFFFACD,
             emissive: 0xFFFACD,
-            emissiveIntensity: 0.5
+            emissiveIntensity: 0.5,
+            roughness: 0.2
         });
         const light = new THREE.Mesh(lightGeometry, lightMaterial);
         light.position.y = 8;
@@ -1300,10 +1692,11 @@ class PortfolioGame3D {
         
         // Headlights - positioned at the front (positive Z)
         const headlightGeometry = new THREE.SphereGeometry(0.2, 8, 6);
-        const headlightMaterial = new THREE.MeshBasicMaterial({ 
+        const headlightMaterial = new THREE.MeshStandardMaterial({ 
             color: 0xFFFFFF,
             emissive: 0xFFFFAA,
-            emissiveIntensity: 0.5
+            emissiveIntensity: 0.5,
+            roughness: 0.3
         });
         
         const headlight1 = new THREE.Mesh(headlightGeometry, headlightMaterial);
@@ -1316,10 +1709,11 @@ class PortfolioGame3D {
         
         // Add rear lights
         const rearLightGeometry = new THREE.SphereGeometry(0.15, 6, 4);
-        const rearLightMaterial = new THREE.MeshBasicMaterial({ 
+        const rearLightMaterial = new THREE.MeshStandardMaterial({ 
             color: 0xFF0000,
             emissive: 0x440000,
-            emissiveIntensity: 0.3
+            emissiveIntensity: 0.3,
+            roughness: 0.35
         });
         
         const rearLight1 = new THREE.Mesh(rearLightGeometry, rearLightMaterial);
@@ -1342,10 +1736,11 @@ class PortfolioGame3D {
     createMinimapCarIndicator() {
         // Create a bright indicator for the car on the minimap
         const indicatorGeometry = new THREE.ConeGeometry(1, 2, 4);
-        const indicatorMaterial = new THREE.MeshBasicMaterial({ 
+        const indicatorMaterial = new THREE.MeshStandardMaterial({ 
             color: 0xFFFF00,
             emissive: 0xFFFF00,
-            emissiveIntensity: 0.5
+            emissiveIntensity: 0.5,
+            roughness: 0.4
         });
         
         this.minimapCarIndicator = new THREE.Mesh(indicatorGeometry, indicatorMaterial);
@@ -1368,15 +1763,17 @@ class PortfolioGame3D {
     handleKeyDown(e) {
         // Handle resume modal keys first (global handling)
         if (this.isResumeViewOpen) {
-            if (e.code === 'KeyQ') {
+            if (e.code === 'KeyQ' || e.code === 'Escape') {
                 e.preventDefault();
                 this.closeResumeView();
                 return;
-            } else if (e.code === 'Escape') {
-                e.preventDefault();
-                this.exitToMainSite();
-                return;
             }
+        }
+        
+        if (e.code === 'Escape' && e.shiftKey) {
+            e.preventDefault();
+            this.exitToMainSite();
+            return;
         }
         
         if (!this.gameActive) return;
@@ -1396,24 +1793,24 @@ class PortfolioGame3D {
     }
     
     handleKeyUp(e) {
-        if (!this.gameActive) return;
         this.keys[e.code] = false;
+    }
+
+    resetInputState() {
+        this.keys = {};
     }
     
     gameLoop() {
-        if (!this.gameActive) {
-            console.log('⚠️ Game loop stopped - gameActive is false');
-            return;
+        const delta = this.clock.getDelta();
+        
+        if (this.gameActive) {
+            this.animationTime += delta;
+            this.update(delta);
+            this.updateCamera();
+            this.updateHUD();
         }
         
-        const delta = this.clock.getDelta();
-        this.animationTime += delta;
-        
-        this.update(delta);
-        this.updateCamera();
-        this.updateHUD();
         this.render();
-        
         this.animationId = requestAnimationFrame(() => this.gameLoop());
     }
     
@@ -1427,15 +1824,21 @@ class PortfolioGame3D {
     }
     
     updateBuildingLabels() {
-        // Make all building labels face the camera
-        this.buildings.forEach(building => {
-            if (building.children.length > 0) {
-                const label = building.children.find(child => child.material && child.material.map);
-                if (label) {
+        if (this.buildingLabels && this.buildingLabels.length) {
+            this.buildingLabels.forEach(label => {
+                if (label && label.lookAt) {
                     label.lookAt(this.camera.position);
                 }
-            }
-        });
+            });
+        }
+
+        if (this.sectionGuideLabels && this.sectionGuideLabels.length) {
+            this.sectionGuideLabels.forEach(mesh => {
+                if (mesh && mesh.lookAt) {
+                    mesh.lookAt(this.camera.position);
+                }
+            });
+        }
     }
     
     updateCarPhysics(delta) {
@@ -1545,23 +1948,23 @@ class PortfolioGame3D {
             const kmh = Math.round(Math.abs(this.carPhysics.speed) * 15);
             const gearText = this.carPhysics.speed < 0 ? 'R' : 'D';
             speedDisplay.textContent = `${kmh} km/h [${gearText}]`;
-            
+
             // Color-code based on speed ranges
-            if (kmh > 400) {
-                speedDisplay.style.color = '#ff0000';
-                speedDisplay.style.textShadow = '0 0 10px #ff0000';
-            } else if (kmh > 250) {
-                speedDisplay.style.color = '#ff8800';
-                speedDisplay.style.textShadow = '0 0 8px #ff8800';
-            } else if (kmh > 150) {
-                speedDisplay.style.color = '#ffff00';
-                speedDisplay.style.textShadow = '0 0 6px #ffff00';
+            if (kmh > 140) {
+                speedDisplay.style.color = '#f97316';
+                speedDisplay.style.textShadow = '0 0 10px #f97316';
+            } else if (kmh > 100) {
+                speedDisplay.style.color = '#fbbf24';
+                speedDisplay.style.textShadow = '0 0 8px #fbbf24';
+            } else if (kmh > 60) {
+                speedDisplay.style.color = '#38bdf8';
+                speedDisplay.style.textShadow = '0 0 6px #38bdf8';
             } else if (this.carPhysics.speed < 0) {
-                speedDisplay.style.color = '#ff6666'; // Red tint for reverse
-                speedDisplay.style.textShadow = '0 0 4px #ff6666';
+                speedDisplay.style.color = '#f472b6'; // Soft magenta for reverse
+                speedDisplay.style.textShadow = '0 0 4px #f472b6';
             } else {
-                speedDisplay.style.color = '#ffffff';
-                speedDisplay.style.textShadow = '0 0 4px #00ff00';
+                speedDisplay.style.color = '#e0f2fe';
+                speedDisplay.style.textShadow = '0 0 4px #22d3ee';
             }
         }
         
@@ -1569,7 +1972,7 @@ class PortfolioGame3D {
         const fuelDisplay = document.getElementById('fuel-display');
         if (fuelDisplay) {
             fuelDisplay.textContent = `${Math.round(this.fuel)}%`;
-            fuelDisplay.style.color = this.fuel < 20 ? '#ff0000' : '#ffffff';
+            fuelDisplay.style.color = this.fuel < 20 ? '#f97316' : '#e0f2fe';
         }
     }
     
@@ -1613,6 +2016,19 @@ class PortfolioGame3D {
                 object.rotation.z = Math.sin(this.animationTime + object.position.x * 0.01) * 0.1;
             }
         });
+
+        if (this.sectionGuideHalos && this.sectionGuideHalos.length) {
+            this.sectionGuideHalos.forEach((halo, index) => {
+                if (halo) {
+                    halo.rotation.z += delta * 0.8;
+                    if (halo.material) {
+                        const baseOpacity = 0.55;
+                        const pulse = (Math.sin(this.animationTime * 2 + index) + 1) * 0.25;
+                        halo.material.opacity = Math.min(1, baseOpacity + pulse * 0.4);
+                    }
+                }
+            });
+        }
     }
     
     updateSpeedEffects(delta) {
@@ -1715,6 +2131,7 @@ class PortfolioGame3D {
             
             // Pause car movement
             this.gameActive = false;
+            this.resetInputState();
         }
     }
     
